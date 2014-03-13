@@ -18,20 +18,15 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.frc = [[HHFixedResultsController alloc] init];
-	// Do any additional setup after loading the view, typically from a nib.
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    self.frc = [[HHFixedResultsController alloc] initWithPredicate:[NSPredicate predicateWithValue:YES] objects:@[@[@{@"title":@"value"},@{@"title":@"value2"}]] sectionNameKeyPath:nil cacheName:nil];
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"HHViewController" forIndexPath:indexPath];
+    id model = [self.frc objectAtIndexPath:indexPath];
+    [cell.textLabel setText:[model valueForKey:@"title"]];
     return cell;
 }
 

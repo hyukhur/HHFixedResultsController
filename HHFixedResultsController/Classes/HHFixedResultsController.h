@@ -9,8 +9,11 @@
 #import <Foundation/Foundation.h>
 
 @interface HHFixedResultsController : NSObject
-- (NSUInteger)addSectionByName:(NSString *)sectionName;
-- (void)addObject:(id)object forScetion:(NSUInteger)sectionIndex;
+- (id)initWithPredicate:(NSPredicate *)predicate objects:(id)kvcObjects sectionNameKeyPath:(NSString *)sectionNameKeyPath cacheName:(NSString *)name;
+
+//- (NSUInteger)addSectionByName:(NSString *)sectionName objects:(id)kvcObjects;
+//- (NSUInteger)addSectionByName:(NSString *)sectionName;
+//- (void)addObject:(id)object forScetion:(NSUInteger)sectionIndex;
 @end
 
 

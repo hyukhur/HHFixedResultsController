@@ -97,17 +97,17 @@
 
 - (id)objectAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+    return nil;
 }
 
 - (NSIndexPath *)indexPathForObject:(id)object
 {
-    
+    return nil;
 }
 
 - (NSString *)sectionIndexTitleForSectionName:(NSString *)sectionName
 {
-    
+    return nil;
 }
 
 - (NSArray *)sectionIndexTitles
@@ -122,7 +122,7 @@
 
 - (NSInteger)sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)sectionIndex
 {
-    
+    return 0;
 }
 
 @end
@@ -134,6 +134,13 @@
 
 
 @implementation HHFixedResultsController
-
+- (id)initWithPredicate:(NSPredicate *)predicate objects:(id)kvcObjects sectionNameKeyPath:(NSString *)sectionNameKeyPath cacheName:(NSString *)name
+{
+    self = [super init];
+    if (self) {
+        
+    }
+    return self;
+}
 @end
 
