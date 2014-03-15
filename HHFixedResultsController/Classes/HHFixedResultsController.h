@@ -8,16 +8,17 @@
 
 #import <Foundation/Foundation.h>
 
-@interface HHFixedResultsController : NSObject
-- (id)initWithPredicate:(NSPredicate *)predicate objects:(id)kvcObjects sectionNameKeyPath:(NSString *)sectionNameKeyPath cacheName:(NSString *)name;
+@class NSFetchRequest;
 
-//- (NSUInteger)addSectionByName:(NSString *)sectionName objects:(id)kvcObjects;
-//- (NSUInteger)addSectionByName:(NSString *)sectionName;
-//- (void)addObject:(id)object forScetion:(NSUInteger)sectionIndex;
+
+@interface HHFixedResultsController : NSObject
+@property (nonatomic, readonly) id objects;
+- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest objects:(id)kvcObjects sectionNameKeyPath:(NSString *)sectionNameKeyPath cacheName:(NSString *)name;
+- (void)addObject:(id)objects;
 @end
 
 
-@class NSFetchRequest, NSManagedObjectContext;
+@class NSManagedObjectContext;
 @protocol NSFetchedResultsControllerDelegate;
 
 /*

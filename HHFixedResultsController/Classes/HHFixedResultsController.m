@@ -23,6 +23,10 @@
 
 
 @interface HHFixedResultsController ()
+@property (nonatomic) id objects;
+@property (nonatomic) NSMutableArray *sections;
+
+#pragma mark -
 @property (nonatomic) NSFetchRequest *fetchRequest_;
 @property (nonatomic) NSManagedObjectContext *managedObjectContext_;
 @property (nonatomic) NSString *sectionNameKeyPath_;
@@ -39,19 +43,17 @@
 
 - (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest managedObjectContext: (NSManagedObjectContext *)context sectionNameKeyPath:(NSString *)sectionNameKeyPath cacheName:(NSString *)name
 {
-    self = [self init];
+    self = [self initWithFetchRequest:fetchRequest objects:nil sectionNameKeyPath:sectionNameKeyPath cacheName:name];
     if (self)
     {
-        self.fetchRequest_ = fetchRequest;
         self.managedObjectContext_ = context;
-        self.sectionNameKeyPath_ = sectionNameKeyPath;
-        self.cacheName_ = name;
     }
     return self;
 }
 
 - (BOOL)performFetch:(NSError **)error
 {
+    NSArray *sectionNames = [self.objects valueForKey:self.sectionNameKeyPath];
     return YES;
 }
 
@@ -87,7 +89,7 @@
 
 + (void)deleteCacheWithName:(NSString *)name
 {
-    
+    //TODO: not implemented
 }
 
 - (NSArray *)fetchedObjects
@@ -134,13 +136,22 @@
 
 
 @implementation HHFixedResultsController
-- (id)initWithPredicate:(NSPredicate *)predicate objects:(id)kvcObjects sectionNameKeyPath:(NSString *)sectionNameKeyPath cacheName:(NSString *)name
+- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest objects:(id)kvcObjects sectionNameKeyPath:(NSString *)sectionNameKeyPath cacheName:(NSString *)name
 {
     self = [super init];
     if (self) {
-        
+        _objects = kvcObjects;
+        _fetchRequest_ = fetchRequest;
+        _sectionNameKeyPath_ = sectionNameKeyPath;
+        _cacheName_ = name;
+        [self performFetch:nil];
     }
     return self;
+}
+
+- (void)addObject:(id)objects
+{
+    
 }
 @end
 
