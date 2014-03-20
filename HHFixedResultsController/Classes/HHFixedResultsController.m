@@ -7,7 +7,7 @@
 //
 
 #import "HHFixedResultsController.h"
-#import <CoreData/NSFetchedResultsController.h>
+#import <CoreData/CoreData.h>
 
 
 @interface HHSectionInfo : NSObject  <NSFetchedResultsSectionInfo>
@@ -31,7 +31,7 @@
 @property (nonatomic) NSManagedObjectContext *managedObjectContext_;
 @property (nonatomic) NSString *sectionNameKeyPath_;
 @property (nonatomic) NSString *cacheName_;
-@property (nonatomic, weak) id<NSFetchedResultsControllerDelegate> delegate_;
+@property (nonatomic, weak) id<NSObject, NSFetchedResultsControllerDelegate> delegate_;
 @property (nonatomic) NSArray *fetchedObjects_;
 @property (nonatomic) NSArray *sectionIndexTitles_;
 @property (nonatomic) NSArray *sections_;
@@ -53,7 +53,17 @@
 
 - (BOOL)performFetch:(NSError **)error
 {
-    NSArray *sectionNames = [self.objects valueForKey:self.sectionNameKeyPath];
+    self.objects = [self.objects sortedArrayUsingDescriptors:self.fetchRequest.sortDescriptors];
+
+    for (id sectionName in [self.objects valueForKey:self.sectionNameKeyPath]) {
+        HHSectionInfo *sectionInfo = [[HHSectionInfo alloc] init];
+        sectionInfo.name = [sectionName description];
+        if ([self.delegate respondsToSelector:@selector(controller:sectionIndexTitleForSectionName:)]) {
+            sectionInfo.indexTitle = [self.delegate controller:(NSFetchedResultsController *)self sectionIndexTitleForSectionName:sectionInfo.name];
+        }
+//        [sectionInfo setName:[sectionName description]];
+    }
+    
     return YES;
 }
 
@@ -144,6 +154,7 @@
         _fetchRequest_ = fetchRequest;
         _sectionNameKeyPath_ = sectionNameKeyPath;
         _cacheName_ = name;
+        _sections = [NSMutableArray array];
         [self performFetch:nil];
     }
     return self;
