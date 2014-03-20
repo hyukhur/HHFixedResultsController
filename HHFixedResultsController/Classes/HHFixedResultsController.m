@@ -13,12 +13,15 @@
 @interface HHSectionInfo : NSObject  <NSFetchedResultsSectionInfo>
 @property (nonatomic) NSString *name;
 @property (nonatomic) NSString *indexTitle;
-@property (nonatomic) NSUInteger numberOfObjects;
+@property (nonatomic, readonly) NSUInteger numberOfObjects;
 @property (nonatomic) NSMutableArray *objects;
 @end
 
 @implementation HHSectionInfo
-
+- (NSUInteger)numberOfObjects
+{
+    return [self.objects count];
+}
 @end
 
 
@@ -58,8 +61,8 @@
     for (id sectionName in [self.objects valueForKey:self.sectionNameKeyPath]) {
         HHSectionInfo *sectionInfo = [[HHSectionInfo alloc] init];
         sectionInfo.name = [sectionName description];
-        if ([self.delegate respondsToSelector:@selector(controller:sectionIndexTitleForSectionName:)]) {
-            sectionInfo.indexTitle = [self.delegate controller:(NSFetchedResultsController *)self sectionIndexTitleForSectionName:sectionInfo.name];
+        if ([self.delegate_ respondsToSelector:@selector(controller:sectionIndexTitleForSectionName:)]) {
+            sectionInfo.indexTitle = [self.delegate_ controller:(NSFetchedResultsController *)self sectionIndexTitleForSectionName:sectionInfo.name];
         }
 //        [sectionInfo setName:[sectionName description]];
     }
@@ -94,7 +97,7 @@
 
 - (void)setDelegate:(id<NSFetchedResultsControllerDelegate>)delegate
 {
-    self.delegate_ = delegate;
+    self.delegate_ = (id<NSObject, NSFetchedResultsControllerDelegate>)delegate;
 }
 
 + (void)deleteCacheWithName:(NSString *)name
