@@ -18,6 +18,15 @@
 @end
 
 @implementation HHSectionInfo
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        _objects = [NSMutableArray array];
+    }
+    return self;
+}
 - (NSUInteger)numberOfObjects
 {
     return [self.objects count];
@@ -27,7 +36,7 @@
 
 @interface HHFixedResultsController ()
 @property (nonatomic) id objects;
-@property (nonatomic) NSMutableArray *sections;
+@property (nonatomic) NSArray *sections;
 
 #pragma mark -
 @property (nonatomic) NSFetchRequest *fetchRequest_;
@@ -37,7 +46,7 @@
 @property (nonatomic, weak) id<NSObject, NSFetchedResultsControllerDelegate> delegate_;
 @property (nonatomic) NSArray *fetchedObjects_;
 @property (nonatomic) NSArray *sectionIndexTitles_;
-@property (nonatomic) NSArray *sections_;
+@property (nonatomic) NSMutableArray *sections_;
 @end
 
 
@@ -56,7 +65,7 @@
 
 - (BOOL)performFetch:(NSError **)error
 {
-    self.objects = [self.objects sortedArrayUsingDescriptors:self.fetchRequest.sortDescriptors];
+    self.objects = [[self.objects sortedArrayUsingDescriptors:self.fetchRequest.sortDescriptors] filteredArrayUsingPredicate:self.fetchRequest.predicate];;
 
     for (id sectionName in [self.objects valueForKey:self.sectionNameKeyPath]) {
         HHSectionInfo *sectionInfo = [[HHSectionInfo alloc] init];
@@ -64,8 +73,10 @@
         if ([self.delegate_ respondsToSelector:@selector(controller:sectionIndexTitleForSectionName:)]) {
             sectionInfo.indexTitle = [self.delegate_ controller:(NSFetchedResultsController *)self sectionIndexTitleForSectionName:sectionInfo.name];
         }
-//        [sectionInfo setName:[sectionName description]];
+        //[sectionInfo setObjects:<#(NSMutableArray *)#>];
+        [self.sections_ addObject:sectionInfo];
     }
+    
     
     return YES;
 }

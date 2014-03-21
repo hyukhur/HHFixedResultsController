@@ -20,13 +20,14 @@
 {
     [super viewDidLoad];
     NSFetchRequest *requst = [NSFetchRequest fetchRequestWithEntityName:nil];
-    requst.sortDescriptors = @[];
-    requst.predicate = [NSPredicate predicateWithValue:YES];
+    requst.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"detail" ascending:YES]];
+    requst.predicate = [NSPredicate predicateWithFormat:@"title != %@", @"title"];
     
     self.frc = [[HHFixedResultsController alloc] initWithFetchRequest:requst objects:@[
   @{@"type":@"type1", @"title":@"title one", @"detail":@"test value1"},
   @{@"type":@"type2", @"title":@"title two", @"detail":@"test value2"},
-  @{@"type":@"type1", @"title":@"title three", @"detail":@"test value2"},
+  @{@"type":@"type1", @"title":@"title three", @"detail":@"test value0"},
+  @{@"type":@"type1", @"title":@"title", @"detail":@"test value0"},
   ] sectionNameKeyPath:@"type" cacheName:nil];
 }
 
