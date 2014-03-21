@@ -11,6 +11,7 @@
 #import <CoreData/CoreData.h>
 
 @interface HHViewController () <UITableViewDataSource, UITableViewDelegate>
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic) HHFixedResultsController *frc;
 @end
 
@@ -19,6 +20,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"HHViewController"];
+    
     NSFetchRequest *requst = [NSFetchRequest fetchRequestWithEntityName:nil];
     requst.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"detail" ascending:YES]];
     requst.predicate = [NSPredicate predicateWithFormat:@"title != %@", @"title"];
@@ -47,7 +51,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [[self.frc.sections objectAtIndex:section] count];
+    return [[self.frc.sections objectAtIndex:section] numberOfObjects];
 }
 
 @end

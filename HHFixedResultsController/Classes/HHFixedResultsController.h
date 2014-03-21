@@ -10,7 +10,6 @@
 
 @class NSFetchRequest;
 
-
 @interface HHFixedResultsController : NSObject
 @property (nonatomic, readonly) id objects;
 - (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest objects:(id)kvcObjects sectionNameKeyPath:(NSString *)sectionNameKeyPath cacheName:(NSString *)name;

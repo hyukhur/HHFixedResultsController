@@ -27,10 +27,33 @@
     }
     return self;
 }
+
+
 - (NSUInteger)numberOfObjects
 {
     return [self.objects count];
 }
+
+
+- (NSUInteger)hash
+{
+    return [_name hash];
+}
+
+- (BOOL)isEqualToSectionInfo:(HHSectionInfo *)object
+{
+    return [_name isEqualToString:object.name];
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if (![object isKindOfClass:[self class]])
+    {
+        return NO;
+    }
+    return [self isEqualToSectionInfo:object];
+}
+
 @end
 
 
@@ -46,7 +69,7 @@
 @property (nonatomic, weak) id<NSObject, NSFetchedResultsControllerDelegate> delegate_;
 @property (nonatomic) NSArray *fetchedObjects_;
 @property (nonatomic) NSArray *sectionIndexTitles_;
-@property (nonatomic) NSMutableArray *sections_;
+@property (nonatomic) NSOrderedSet *sections_;
 @end
 
 
@@ -65,18 +88,25 @@
 
 - (BOOL)performFetch:(NSError **)error
 {
-    self.objects = [[self.objects sortedArrayUsingDescriptors:self.fetchRequest.sortDescriptors] filteredArrayUsingPredicate:self.fetchRequest.predicate];;
-
-    for (id sectionName in [self.objects valueForKey:self.sectionNameKeyPath]) {
+    NSArray *objects = [[self.objects sortedArrayUsingDescriptors:self.fetchRequest.sortDescriptors] filteredArrayUsingPredicate:self.fetchRequest.predicate];;
+    self.objects = objects;
+    
+    NSMutableDictionary *sectionsByName = [NSMutableDictionary dictionary];
+    NSMutableOrderedSet *sections = [NSMutableOrderedSet orderedSet];
+    for (id sectionName in [objects valueForKey:self.sectionNameKeyPath]) {
         HHSectionInfo *sectionInfo = [[HHSectionInfo alloc] init];
         sectionInfo.name = [sectionName description];
         if ([self.delegate_ respondsToSelector:@selector(controller:sectionIndexTitleForSectionName:)]) {
             sectionInfo.indexTitle = [self.delegate_ controller:(NSFetchedResultsController *)self sectionIndexTitleForSectionName:sectionInfo.name];
         }
-        //[sectionInfo setObjects:<#(NSMutableArray *)#>];
-        [self.sections_ addObject:sectionInfo];
+        [sections addObject:sectionInfo];
+        [sectionsByName setObject:sectionInfo forKey:sectionName];
     }
-    
+    for (id object in objects) {
+        HHSectionInfo *sectionInfo = [sectionsByName objectForKey:[object valueForKey:self.sectionNameKeyPath]];
+        [sectionInfo.objects addObject:object];
+    }
+    self.sections_ = sections;
     
     return YES;
 }
@@ -123,7 +153,11 @@
 
 - (id)objectAtIndexPath:(NSIndexPath *)indexPath
 {
-    return nil;
+    HHSectionInfo *sectionInfo = [self.sections_ objectAtIndex:indexPath.section];
+    if (!sectionInfo) {
+        return nil;
+    }
+    return [sectionInfo.objects objectAtIndex:indexPath.row];
 }
 
 - (NSIndexPath *)indexPathForObject:(id)object
@@ -143,7 +177,7 @@
 
 - (NSArray *)sections
 {
-    return self.sections_;
+    return [self.sections_ array];
 }
 
 - (NSInteger)sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)sectionIndex
