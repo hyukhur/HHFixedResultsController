@@ -58,17 +58,21 @@
 
 
 @interface HHFixedResultsController ()
-@property (nonatomic) id objects;
 
-#pragma mark -
-@property (nonatomic) NSFetchRequest *fetchRequest_;
+#pragma mark - private
+@property (nonatomic) NSMutableArray *objects_;
+
+#pragma mark - public
+@property (nonatomic) NSFetchRequest *fetchRequest;
+@property (nonatomic) NSArray *fetchedObjects;
+@property (nonatomic) NSString *sectionNameKeyPath;
+@property (nonatomic) NSString *cacheName;
+@property (nonatomic) NSArray *sections;
+
+#pragma mark - unused
 @property (nonatomic) NSManagedObjectContext *managedObjectContext_;
-@property (nonatomic) NSString *sectionNameKeyPath_;
-@property (nonatomic) NSString *cacheName_;
 @property (nonatomic, weak) id<NSObject, NSFetchedResultsControllerDelegate> delegate_;
-@property (nonatomic) NSArray *fetchedObjects_;
 @property (nonatomic) NSArray *sectionIndexTitles_;
-@property (nonatomic) NSOrderedSet *sections_;
 @end
 
 
@@ -93,12 +97,12 @@
 
 - (BOOL)performFetch:(NSError **)error
 {
-    NSArray *objects = [[self.objects sortedArrayUsingDescriptors:self.fetchRequest.sortDescriptors] filteredArrayUsingPredicate:self.fetchRequest.predicate];;
-    self.objects = objects;
+    NSArray *sFetchedObjects = [[self.objects sortedArrayUsingDescriptors:self.fetchRequest.sortDescriptors] filteredArrayUsingPredicate:self.fetchRequest.predicate];;
+    self.fetchedObjects = sFetchedObjects;
     
     NSMutableDictionary *sectionsByName = [NSMutableDictionary dictionary];
     NSMutableOrderedSet *sections = [NSMutableOrderedSet orderedSet];
-    for (id object in objects) {
+    for (id object in self.fetchedObjects) {
         id sectionName = [object valueForKey:self.sectionNameKeyPath];
         HHSectionInfo *sectionInfo = [sectionsByName objectForKey:sectionName];
         if (!sectionInfo)
@@ -113,14 +117,9 @@
         }
         [sectionInfo.objects addObject:object];
     }
-    self.sections_ = sections;
+    self.sections = [sections array];
     
     return YES;
-}
-
-- (NSFetchRequest *)fetchRequest
-{
-    return self.fetchRequest_;
 }
 
 - (NSManagedObjectContext *)managedObjectContext
@@ -128,15 +127,6 @@
     return self.managedObjectContext_;
 }
 
-- (NSString *)sectionNameKeyPath
-{
-    return self.sectionNameKeyPath_;
-}
-
-- (NSString *)cacheName
-{
-    return self.cacheName_;
-}
 
 - (id<NSFetchedResultsControllerDelegate>)delegate
 {
@@ -153,15 +143,11 @@
     //TODO: not implemented
 }
 
-- (NSArray *)fetchedObjects
-{
-    return self.fetchedObjects_;
-}
 
 - (id)objectAtIndexPath:(NSIndexPath *)indexPath
 {
     @try {
-        HHSectionInfo *sectionInfo = [self.sections_ objectAtIndex:indexPath.section];
+        HHSectionInfo *sectionInfo = [self.sections objectAtIndex:indexPath.section];
         return [sectionInfo.objects objectAtIndex:indexPath.row];
     }
     @catch (NSException *exception) {
@@ -191,11 +177,6 @@
     return self.sectionIndexTitles_;
 }
 
-- (NSArray *)sections
-{
-    return [self.sections_ array];
-}
-
 - (NSInteger)sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)sectionIndex
 {
     return 0;
@@ -209,20 +190,25 @@
 
 
 @implementation HHFixedResultsController
-- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest objects:(id)kvcObjects sectionNameKeyPath:(NSString *)sectionNameKeyPath cacheName:(NSString *)name
+- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest objects:(NSArray *)kvcObjects sectionNameKeyPath:(NSString *)sectionNameKeyPath cacheName:(NSString *)name
 {
     self = [super init];
     if (self) {
+        _fetchRequest = fetchRequest;
         _objects = kvcObjects;
-        _fetchRequest_ = fetchRequest;
-        _sectionNameKeyPath_ = sectionNameKeyPath;
-        _cacheName_ = name;
+        _sectionNameKeyPath = sectionNameKeyPath;
+        _cacheName = name;
         [self performFetch:nil];
     }
     return self;
 }
 
-- (void)addObject:(id)objects
+- (void)addObject:(id)object
+{
+    
+}
+
+- (void)addObjectFromArray:(NSArray *)objects
 {
     
 }
