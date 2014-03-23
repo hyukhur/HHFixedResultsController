@@ -59,7 +59,6 @@
 
 @interface HHFixedResultsController ()
 @property (nonatomic) id objects;
-@property (nonatomic) NSArray *sections;
 
 #pragma mark -
 @property (nonatomic) NSFetchRequest *fetchRequest_;
@@ -70,6 +69,12 @@
 @property (nonatomic) NSArray *fetchedObjects_;
 @property (nonatomic) NSArray *sectionIndexTitles_;
 @property (nonatomic) NSOrderedSet *sections_;
+@end
+
+
+@implementation HHFixedResultsController (Private)
+
+
 @end
 
 
@@ -93,17 +98,19 @@
     
     NSMutableDictionary *sectionsByName = [NSMutableDictionary dictionary];
     NSMutableOrderedSet *sections = [NSMutableOrderedSet orderedSet];
-    for (id sectionName in [objects valueForKey:self.sectionNameKeyPath]) {
-        HHSectionInfo *sectionInfo = [[HHSectionInfo alloc] init];
-        sectionInfo.name = [sectionName description];
-        if ([self.delegate_ respondsToSelector:@selector(controller:sectionIndexTitleForSectionName:)]) {
-            sectionInfo.indexTitle = [self.delegate_ controller:(NSFetchedResultsController *)self sectionIndexTitleForSectionName:sectionInfo.name];
-        }
-        [sections addObject:sectionInfo];
-        [sectionsByName setObject:sectionInfo forKey:sectionName];
-    }
     for (id object in objects) {
-        HHSectionInfo *sectionInfo = [sectionsByName objectForKey:[object valueForKey:self.sectionNameKeyPath]];
+        id sectionName = [object valueForKey:self.sectionNameKeyPath];
+        HHSectionInfo *sectionInfo = [sectionsByName objectForKey:sectionName];
+        if (!sectionInfo)
+        {
+            HHSectionInfo *sectionInfo = [[HHSectionInfo alloc] init];
+            sectionInfo.name = [sectionName description];
+            if ([self.delegate_ respondsToSelector:@selector(controller:sectionIndexTitleForSectionName:)]) {
+                sectionInfo.indexTitle = [self.delegate_ controller:(NSFetchedResultsController *)self sectionIndexTitleForSectionName:sectionInfo.name];
+            }
+            [sections addObject:sectionInfo];
+            [sectionsByName setObject:sectionInfo forKey:sectionName];
+        }
         [sectionInfo.objects addObject:object];
     }
     self.sections_ = sections;
@@ -153,11 +160,20 @@
 
 - (id)objectAtIndexPath:(NSIndexPath *)indexPath
 {
-    HHSectionInfo *sectionInfo = [self.sections_ objectAtIndex:indexPath.section];
-    if (!sectionInfo) {
-        return nil;
+    @try {
+        HHSectionInfo *sectionInfo = [self.sections_ objectAtIndex:indexPath.section];
+        return [sectionInfo.objects objectAtIndex:indexPath.row];
     }
-    return [sectionInfo.objects objectAtIndex:indexPath.row];
+    @catch (NSException *exception) {
+        if ([exception.name isEqualToString:@"NSRangeException"])
+        {
+            return nil;
+        }
+        else
+        {
+            @throw exception;
+        }
+    }
 }
 
 - (NSIndexPath *)indexPathForObject:(id)object
@@ -189,7 +205,6 @@
 
 
 @interface HHFixedResultsController ()
-@property (nonatomic) NSMutableArray *sectionInfos;
 @end
 
 
@@ -202,7 +217,6 @@
         _fetchRequest_ = fetchRequest;
         _sectionNameKeyPath_ = sectionNameKeyPath;
         _cacheName_ = name;
-        _sections = [NSMutableArray array];
         [self performFetch:nil];
     }
     return self;

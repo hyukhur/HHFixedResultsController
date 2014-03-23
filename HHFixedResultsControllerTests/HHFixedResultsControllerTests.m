@@ -43,6 +43,7 @@
 - (void)testFetch
 {
     id model = [self.frc objectAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    XCTAssertNotNil(model);
     XCTAssertEqual(@"title one", [model valueForKey:@"title"]);
     XCTAssertEqual(@"test value1", [model valueForKey:@"detail"]);
     XCTAssertEqual(@"type1", [model valueForKey:@"type"]);
@@ -50,10 +51,11 @@
 
 
 - (void) testSection {
-    XCTAssertEqual(2, [[self.frc sections] count]);
+    XCTAssertNotNil([self.frc sections]);
+    XCTAssertEqual((NSUInteger)2, [[self.frc sections] count]);
     id<NSFetchedResultsSectionInfo> sectionInfo = [[self.frc sections] firstObject];
     XCTAssertEqual(@"type1", [sectionInfo name]);
-    XCTAssertEqual(@"type2", [[self.frc sections] lastObject]);
+    XCTAssertEqual(@"type2", [[[self.frc sections] lastObject] name]);
 }
 
 @end
