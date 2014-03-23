@@ -97,27 +97,27 @@
 
 - (BOOL)performFetch:(NSError **)error
 {
-    NSArray *sFetchedObjects = [[self.objects sortedArrayUsingDescriptors:self.fetchRequest.sortDescriptors] filteredArrayUsingPredicate:self.fetchRequest.predicate];;
+    NSArray *sFetchedObjects = [[self.objects filteredArrayUsingPredicate:self.fetchRequest.predicate] sortedArrayUsingDescriptors:self.fetchRequest.sortDescriptors];
     self.fetchedObjects = sFetchedObjects;
     
     NSMutableDictionary *sectionsByName = [NSMutableDictionary dictionary];
     NSMutableOrderedSet *sections = [NSMutableOrderedSet orderedSet];
     for (id object in self.fetchedObjects) {
-        id sectionName = [object valueForKey:self.sectionNameKeyPath];
-        HHSectionInfo *sectionInfo = [sectionsByName objectForKey:sectionName];
+        id sectionName = [object valueForKey:self.sectionNameKeyPath?:@""];
+        HHSectionInfo *sectionInfo = [sectionsByName objectForKey:sectionName?:@""];
         if (!sectionInfo)
         {
-            HHSectionInfo *sectionInfo = [[HHSectionInfo alloc] init];
+            sectionInfo = [[HHSectionInfo alloc] init];
             sectionInfo.name = [sectionName description];
             if ([self.delegate_ respondsToSelector:@selector(controller:sectionIndexTitleForSectionName:)]) {
                 sectionInfo.indexTitle = [self.delegate_ controller:(NSFetchedResultsController *)self sectionIndexTitleForSectionName:sectionInfo.name];
             }
             [sections addObject:sectionInfo];
-            [sectionsByName setObject:sectionInfo forKey:sectionName];
+            [sectionsByName setObject:sectionInfo forKey:sectionName?:@""];
         }
         [sectionInfo.objects addObject:object];
     }
-    self.sections = [sections array];
+    self.sections = [[sections filteredOrderedSetUsingPredicate:[NSPredicate predicateWithFormat:@"objects.@count > 0"]] array];
     
     return YES;
 }
@@ -164,6 +164,15 @@
 
 - (NSIndexPath *)indexPathForObject:(id)object
 {
+    for (NSUInteger idx = 0; idx < [self.sections count]; idx++)
+    {
+        HHSectionInfo *sectionInfo = [self.sections objectAtIndex:idx];
+        NSUInteger index = [sectionInfo.objects indexOfObject:object];
+        if (index != NSNotFound)
+        {
+            return [NSIndexPath indexPathForRow:index inSection:idx];
+        }
+    }
     return nil;
 }
 
@@ -198,7 +207,6 @@
         _objects = kvcObjects;
         _sectionNameKeyPath = sectionNameKeyPath;
         _cacheName = name;
-        [self performFetch:nil];
     }
     return self;
 }

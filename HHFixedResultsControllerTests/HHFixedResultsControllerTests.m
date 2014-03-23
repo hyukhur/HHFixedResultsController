@@ -12,6 +12,7 @@
 
 @interface HHFixedResultsControllerTests : XCTestCase
 @property (nonatomic, strong)HHFixedResultsController *frc;
+@property (nonatomic, strong)NSArray *objects;
 @end
 
 @implementation HHFixedResultsControllerTests
@@ -19,20 +20,23 @@
 - (void)setUp
 {
     [super setUp];
-    NSFetchRequest *requst = [NSFetchRequest fetchRequestWithEntityName:nil];
-    requst.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"detail" ascending:YES]];
-    requst.predicate = [NSPredicate predicateWithFormat:@"title != %@", @"title"];
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:nil];
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"detail" ascending:YES]];
+    request.predicate = [NSPredicate predicateWithFormat:@"title != %@", @"title"];
+    
+    self.objects = @[
+                     @{@"type":@"type1", @"title":@"title one", @"detail":@"test value1", @"type2":@""},
+                     @{@"type":@"type2", @"title":@"title two", @"detail":@"test value2", @"type2":@""},
+                     @{@"type":@"type1", @"title":@"title zero", @"detail":@"test value0", @"type2":@""},
+                     @{@"type":@"type1", @"title":@"title", @"detail":@"test value0", @"type2":@""},
+                     ];
     
     self.frc = [[HHFixedResultsController alloc]
-                initWithFetchRequest:requst
-                objects:@[
-                          @{@"type":@"type1", @"title":@"title one", @"detail":@"test value1"},
-                          @{@"type":@"type2", @"title":@"title two", @"detail":@"test value2"},
-                          @{@"type":@"type1", @"title":@"title three", @"detail":@"test value0"},
-                          @{@"type":@"type1", @"title":@"title", @"detail":@"test value0"},
-                          ]
+                initWithFetchRequest:request
+                objects:self.objects
                 sectionNameKeyPath:@"type"
                 cacheName:nil];
+    [self.frc performFetch:nil];
 }
 
 - (void)tearDown
@@ -42,20 +46,146 @@
 
 - (void)testFetch
 {
-    id model = [self.frc objectAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-    XCTAssertNotNil(model);
-    XCTAssertEqual(@"title one", [model valueForKey:@"title"]);
-    XCTAssertEqual(@"test value1", [model valueForKey:@"detail"]);
-    XCTAssertEqual(@"type1", [model valueForKey:@"type"]);
+    HHFixedResultsController *frc = [[HHFixedResultsController alloc]
+                initWithFetchRequest:self.frc.fetchRequest
+                objects:self.objects
+                sectionNameKeyPath:@"type"
+                cacheName:nil];
+
+    XCTAssertEqual((NSUInteger)0, [[frc fetchedObjects] count]);
+    XCTAssertEqual((NSUInteger)0, [[frc sections] count]);
+    XCTAssertEqual((NSUInteger)0, [[[[frc sections] lastObject] objects] count]);
+    XCTAssertNil([[[frc sections] lastObject] name]);
+    [frc performFetch:nil];
+    
+    XCTAssertEqual((NSUInteger)3, [[frc fetchedObjects] count]);
+    XCTAssertEqual((NSUInteger)2, [[frc sections] count]);
+    XCTAssertEqual((NSUInteger)1, [[[[frc sections] lastObject] objects] count]);
+    XCTAssertNotNil([[[frc sections] lastObject] name]);
+
 }
 
 
-- (void) testSection {
+- (void) testFetchAllObjects {
+    NSArray *allObject = [self.frc fetchedObjects];
+    XCTAssertEqual((NSUInteger)3, [allObject count]);
+    XCTAssertEqual(@"test value2", [[allObject lastObject] objectForKey:@"detail"]);
+}
+
+
+- (void) testSections {
     XCTAssertNotNil([self.frc sections]);
     XCTAssertEqual((NSUInteger)2, [[self.frc sections] count]);
     id<NSFetchedResultsSectionInfo> sectionInfo = [[self.frc sections] firstObject];
-    XCTAssertEqual(@"type1", [sectionInfo name]);
-    XCTAssertEqual(@"type2", [[[self.frc sections] lastObject] name]);
+    XCTAssertEqualObjects(@"type1", [sectionInfo name]);
+    XCTAssertEqualObjects(@"type2", [[[self.frc sections] lastObject] name]);
+    XCTAssertEqual((NSUInteger)2, [[sectionInfo objects] count]);
+    XCTAssertEqual((NSUInteger)1, [[[[self.frc sections] lastObject] objects] count]);
 }
 
+
+- (void) testObjectAtIndexPath {
+    id model = [self.frc objectAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    XCTAssertNotNil(model);
+    
+    XCTAssertEqualObjects(@"title zero", [model valueForKey:@"title"]);
+    XCTAssertEqualObjects(@"test value0", [model valueForKey:@"detail"]);
+    XCTAssertEqualObjects(@"type1", [model valueForKey:@"type"]);
+}
+
+- (void) testIndexPathForObject {
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
+    id lastObject = [self.frc objectAtIndexPath:indexPath];
+    NSIndexPath *expectedIndexPath = [self.frc indexPathForObject:lastObject];
+    XCTAssertNotNil(lastObject);
+    XCTAssertNotNil(expectedIndexPath);
+    XCTAssertNotEqual(indexPath, expectedIndexPath);
+    XCTAssertEqual(indexPath.section, expectedIndexPath.section);
+    XCTAssertEqual(indexPath.row, expectedIndexPath.row);
+    
+    
+    expectedIndexPath = [self.frc indexPathForObject:[self.objects lastObject]];
+    XCTAssertNil(expectedIndexPath);
+    expectedIndexPath = [self.frc indexPathForObject:@{@"type":@"type1", @"title":@"title", @"detail":@"test value0"}];
+    XCTAssertNil(expectedIndexPath);
+    expectedIndexPath = [self.frc indexPathForObject:[[self.objects firstObject] copy]];
+    XCTAssertNotNil(expectedIndexPath);
+}
+
+- (void) testSectionNameKeyPath {
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:nil];
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"detail" ascending:YES]];
+    request.predicate = [NSPredicate predicateWithFormat:@"title != %@", @"title"];
+    
+    HHFixedResultsController *frc = [[HHFixedResultsController alloc]
+                initWithFetchRequest:request
+                objects:self.objects
+                sectionNameKeyPath:@"type2"
+                cacheName:nil];
+    [frc performFetch:nil];
+    id<NSFetchedResultsSectionInfo> sectionInfo = [[frc sections] firstObject];
+    XCTAssertEqualObjects(@"", [sectionInfo name]);
+    XCTAssertEqualObjects(@"", [[[frc sections] lastObject] name]);
+    XCTAssertEqual((NSUInteger)3, [[sectionInfo objects] count]);
+    XCTAssertEqual((NSUInteger)3, [[frc fetchedObjects] count]);
+    
+    frc = [[HHFixedResultsController alloc]
+           initWithFetchRequest:request
+           objects:self.objects
+           sectionNameKeyPath:@"type3"
+           cacheName:nil];
+    [frc performFetch:nil];
+    XCTAssertEqual((NSUInteger)1, [[frc sections] count]);
+    XCTAssertNil([[[frc sections] firstObject] name]);
+    XCTAssertEqual((NSUInteger)3, [[sectionInfo objects] count]);
+    XCTAssertEqual((NSUInteger)3, [[frc fetchedObjects] count]);
+    
+    frc = [[HHFixedResultsController alloc]
+           initWithFetchRequest:request
+           objects:self.objects
+           sectionNameKeyPath:nil
+           cacheName:nil];
+    [frc performFetch:nil];
+    XCTAssertEqual((NSUInteger)1, [[frc sections] count]);
+    XCTAssertNil([[[frc sections] firstObject] name]);
+    XCTAssertEqual((NSUInteger)3, [[sectionInfo objects] count]);
+    XCTAssertEqual((NSUInteger)3, [[frc fetchedObjects] count]);
+}
+
+- (void) testSectionIndexTitles {
+    
+}
+
+- (void) testSectionIndexTitleForSectionName {
+    
+}
+
+- (void) testSectionForSectionIndexTitle {
+    
+}
+
+- (void) testCacheName {
+    
+}
+
+- (void) testDeleteCacheWithName {
+    
+}
+
+- (void) testSetObjects {
+    
+}
+
+
+- (void) testAddObject {
+    
+}
+
+- (void) testAddObjects {
+    
+}
+
+- (void) testDelegate {
+    
+}
 @end
