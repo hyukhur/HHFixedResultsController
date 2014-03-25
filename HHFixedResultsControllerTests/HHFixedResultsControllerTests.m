@@ -10,12 +10,17 @@
 #import "HHFixedResultsController.h"
 #import <CoreData/CoreData.h>
 
-@interface HHFixedResultsControllerTests : XCTestCase
+@interface HHFixedResultsControllerTests : XCTestCase <NSFetchedResultsControllerDelegate>
 @property (nonatomic, strong)HHFixedResultsController *frc;
 @property (nonatomic, strong)NSArray *objects;
 @end
 
 @implementation HHFixedResultsControllerTests
+
+- (NSString *)controller:(NSFetchedResultsController *)controller sectionIndexTitleForSectionName:(NSString *)sectionName
+{
+    return [sectionName stringByAppendingString:@"_titile"];
+}
 
 - (void)setUp
 {
@@ -153,16 +158,25 @@
 }
 
 - (void) testSectionIndexTitles {
+    NSArray * titles = [self.frc sectionIndexTitles];
+    XCTAssertEqualObjects(@"type1", [titles firstObject]);
+    XCTAssertEqualObjects(@"type2", [titles lastObject]);
+}
+
+- (void) testSectionForSectionIndexTitleAtIndex {
     
 }
 
 - (void) testSectionIndexTitleForSectionName {
+    NSString *indexTitle = [self.frc sectionIndexTitleForSectionName:@"type1"];
+    XCTAssertEqualObjects(@"type1", indexTitle);
     
+    [self.frc setDelegate:self];
+    indexTitle = [self.frc sectionIndexTitleForSectionName:@"type1"];
+    XCTAssertEqualObjects(@"type1_titile", indexTitle);
+    [self.frc setDelegate:nil];
 }
 
-- (void) testSectionForSectionIndexTitle {
-    
-}
 
 - (void) testCacheName {
     

@@ -109,9 +109,7 @@
         {
             sectionInfo = [[HHSectionInfo alloc] init];
             sectionInfo.name = [sectionName description];
-            if ([self.delegate_ respondsToSelector:@selector(controller:sectionIndexTitleForSectionName:)]) {
-                sectionInfo.indexTitle = [self.delegate_ controller:(NSFetchedResultsController *)self sectionIndexTitleForSectionName:sectionInfo.name];
-            }
+            sectionInfo.indexTitle = [self sectionIndexTitleForSectionName:sectionInfo.name];
             [sections addObject:sectionInfo];
             [sectionsByName setObject:sectionInfo forKey:sectionName?:@""];
         }
@@ -178,12 +176,15 @@
 
 - (NSString *)sectionIndexTitleForSectionName:(NSString *)sectionName
 {
-    return nil;
+    if ([self.delegate_ respondsToSelector:@selector(controller:sectionIndexTitleForSectionName:)]) {
+        return [self.delegate_ controller:(NSFetchedResultsController *)self sectionIndexTitleForSectionName:sectionName];
+    }
+    return sectionName;
 }
 
 - (NSArray *)sectionIndexTitles
 {
-    return self.sectionIndexTitles_;
+    return [self.sections valueForKey:@"indexTitle"];
 }
 
 - (NSInteger)sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)sectionIndex
