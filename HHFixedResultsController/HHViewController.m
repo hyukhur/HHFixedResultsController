@@ -27,12 +27,17 @@
     requst.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"detail" ascending:YES]];
     requst.predicate = [NSPredicate predicateWithFormat:@"title != %@", @"title"];
     
-    self.frc = [[HHFixedResultsController alloc] initWithFetchRequest:requst objects:@[
-  @{@"type":@"type1", @"title":@"title one", @"detail":@"test value1"},
-  @{@"type":@"type2", @"title":@"title two", @"detail":@"test value2"},
-  @{@"type":@"type1", @"title":@"title three", @"detail":@"test value0"},
-  @{@"type":@"type1", @"title":@"title", @"detail":@"test value0"},
-  ] sectionNameKeyPath:@"type" cacheName:nil];
+    self.frc = [[HHFixedResultsController alloc] initWithFetchRequest:requst
+                                                              objects:@[
+                                                                        @{@"type":@"1type", @"title":@"title one", @"detail":@"test value1", @"type2":@""},
+                                                                        @{@"type":@"2type", @"title":@"title two", @"detail":@"test value2", @"type2":@""},
+                                                                        @{@"type":@"1types",@"title":@"title fouth", @"detail":@"test value4", @"type2":@""},
+                                                                        @{@"type":@"1type", @"title":@"title zero", @"detail":@"test value0", @"type2":@""},
+                                                                        @{@"type":@"1type", @"title":@"title", @"detail":@"test value0", @"type2":@""},
+                                                                        ]
+                                                   sectionNameKeyPath:@"type"
+                                                            cacheName:nil];
+    self.frc.delegate = self;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -52,6 +57,16 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return [[self.frc.sections objectAtIndex:section] numberOfObjects];
+}
+
+- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
+{
+    return [self.frc sectionForSectionIndexTitle:title atIndex:index];
+}
+
+- (NSString *)controller:(NSFetchedResultsController *)controller sectionIndexTitleForSectionName:(NSString *)sectionName
+{
+    return [NSString stringWithFormat: @"%C", [sectionName characterAtIndex:0]];
 }
 
 @end

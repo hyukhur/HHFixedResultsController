@@ -61,6 +61,7 @@
 
 #pragma mark - private
 @property (nonatomic) NSMutableArray *objects_;
+@property (nonatomic) NSMutableDictionary *indexesForSectionName;
 
 #pragma mark - public
 @property (nonatomic) NSFetchRequest *fetchRequest;
@@ -100,22 +101,25 @@
     NSArray *sFetchedObjects = [[self.objects filteredArrayUsingPredicate:self.fetchRequest.predicate] sortedArrayUsingDescriptors:self.fetchRequest.sortDescriptors];
     self.fetchedObjects = sFetchedObjects;
     
+    NSMutableDictionary *indexesForSectionName = [NSMutableDictionary dictionary];
     NSMutableDictionary *sectionsByName = [NSMutableDictionary dictionary];
     NSMutableOrderedSet *sections = [NSMutableOrderedSet orderedSet];
     for (id object in self.fetchedObjects) {
-        id sectionName = [object valueForKey:self.sectionNameKeyPath?:@""];
-        HHSectionInfo *sectionInfo = [sectionsByName objectForKey:sectionName?:@""];
+        id sectionName =  object[self.sectionNameKeyPath?:@""];
+        HHSectionInfo *sectionInfo = sectionsByName[sectionName?:@""];
         if (!sectionInfo)
         {
             sectionInfo = [[HHSectionInfo alloc] init];
             sectionInfo.name = [sectionName description];
-            sectionInfo.indexTitle = [self sectionIndexTitleForSectionName:sectionInfo.name];
+            sectionInfo.indexTitle = [self sectionIndexTitleForSectionName:sectionInfo.name] ?: sectionInfo.name;
             [sections addObject:sectionInfo];
-            [sectionsByName setObject:sectionInfo forKey:sectionName?:@""];
+            sectionsByName[sectionInfo.name?:@""] = sectionInfo;
+            indexesForSectionName[sectionInfo.indexTitle?:@""] = indexesForSectionName[sectionInfo.indexTitle?:@""] ?: @([sections count] - 1 );
         }
         [sectionInfo.objects addObject:object];
     }
     self.sections = [[sections filteredOrderedSetUsingPredicate:[NSPredicate predicateWithFormat:@"objects.@count > 0"]] array];
+    self.indexesForSectionName = indexesForSectionName;
     
     return YES;
 }
@@ -184,12 +188,12 @@
 
 - (NSArray *)sectionIndexTitles
 {
-    return [self.sections valueForKey:@"indexTitle"];
+    return [[NSOrderedSet orderedSetWithArray:[self.sections valueForKey:@"indexTitle"]] array];
 }
 
 - (NSInteger)sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)sectionIndex
 {
-    return 0;
+    return [self.indexesForSectionName[title] integerValue];
 }
 
 @end
