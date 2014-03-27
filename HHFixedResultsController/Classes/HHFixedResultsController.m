@@ -61,7 +61,8 @@
 
 #pragma mark - private
 @property (nonatomic) NSMutableArray *objects_;
-@property (nonatomic) NSMutableDictionary *indexesForSectionName;
+@property (nonatomic) NSArray *indexTitles;
+@property (nonatomic) NSDictionary *indexesForSectionName;
 
 #pragma mark - public
 @property (nonatomic) NSFetchRequest *fetchRequest;
@@ -119,7 +120,8 @@
         [sectionInfo.objects addObject:object];
     }
     self.sections = [[sections filteredOrderedSetUsingPredicate:[NSPredicate predicateWithFormat:@"objects.@count > 0"]] array];
-    self.indexesForSectionName = indexesForSectionName;
+    self.indexTitles = [[NSOrderedSet orderedSetWithArray:[self.sections valueForKey:@"indexTitle"]] array];
+    self.indexesForSectionName = [indexesForSectionName copy];
     
     return YES;
 }
@@ -188,7 +190,7 @@
 
 - (NSArray *)sectionIndexTitles
 {
-    return [[NSOrderedSet orderedSetWithArray:[self.sections valueForKey:@"indexTitle"]] array];
+    return self.indexTitles;
 }
 
 - (NSInteger)sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)sectionIndex
