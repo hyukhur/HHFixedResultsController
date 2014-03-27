@@ -203,6 +203,70 @@
     [self.frc setDelegate:nil];
 }
 
+- (void) testSetObjects {
+    [self.frc setObjects:[self.objects arrayByAddingObjectsFromArray:self.objects]];
+    
+    [self testFetchAllObjects];
+    [self testSections];
+    [self testObjectAtIndexPath];
+    [self testIndexPathForObject];
+    [self testSectionIndexTitleForSectionName];
+    
+    [self.frc performFetch:nil];
+    
+    XCTAssertNotNil([self.frc sections]);
+    XCTAssertEqual((NSUInteger)3, [[self.frc sections] count]);
+    id<NSFetchedResultsSectionInfo> sectionInfo = [[self.frc sections] firstObject];
+    XCTAssertEqualObjects(@"1type", [sectionInfo name]);
+    XCTAssertEqualObjects(@"2type", [[[self.frc sections] objectAtIndex:1] name]);
+    XCTAssertEqualObjects(@"1types", [[[self.frc sections] lastObject] name]);
+    XCTAssertEqual((NSUInteger)4, [[sectionInfo objects] count]);
+    XCTAssertEqual((NSUInteger)2, [[[[self.frc sections] lastObject] objects] count]);
+}
+
+
+- (void) testAddObject {
+    [self.frc addObject:[self.objects firstObject]];
+    
+    [self testFetchAllObjects];
+    [self testSections];
+    [self testObjectAtIndexPath];
+    [self testIndexPathForObject];
+    [self testSectionIndexTitleForSectionName];
+    
+    [self.frc performFetch:nil];
+    
+    XCTAssertNotNil([self.frc sections]);
+    XCTAssertEqual((NSUInteger)3, [[self.frc sections] count]);
+    id<NSFetchedResultsSectionInfo> sectionInfo = [[self.frc sections] firstObject];
+    XCTAssertEqualObjects(@"1type", [sectionInfo name]);
+    XCTAssertEqualObjects(@"2type", [[[self.frc sections] objectAtIndex:1] name]);
+    XCTAssertEqualObjects(@"1types", [[[self.frc sections] lastObject] name]);
+    XCTAssertEqual((NSUInteger)3, [[sectionInfo objects] count]);
+    XCTAssertEqual((NSUInteger)1, [[[[self.frc sections] lastObject] objects] count]);
+}
+
+- (void) testAddObjects {
+    [self.frc addObjectFromArray:self.objects];
+    
+    [self testFetchAllObjects];
+    [self testSections];
+    [self testObjectAtIndexPath];
+    [self testIndexPathForObject];
+    [self testSectionIndexTitleForSectionName];
+    
+    [self.frc performFetch:nil];
+    
+    XCTAssertNotNil([self.frc sections]);
+    XCTAssertEqual((NSUInteger)3, [[self.frc sections] count]);
+    id<NSFetchedResultsSectionInfo> sectionInfo = [[self.frc sections] firstObject];
+    XCTAssertEqualObjects(@"1type", [sectionInfo name]);
+    XCTAssertEqualObjects(@"2type", [[[self.frc sections] objectAtIndex:1] name]);
+    XCTAssertEqualObjects(@"1types", [[[self.frc sections] lastObject] name]);
+    XCTAssertEqual((NSUInteger)4, [[sectionInfo objects] count]);
+    XCTAssertEqual((NSUInteger)2, [[[[self.frc sections] lastObject] objects] count]);
+}
+
 
 - (void) testCacheName {
     
@@ -212,20 +276,5 @@
     
 }
 
-- (void) testSetObjects {
-    
-}
 
-
-- (void) testAddObject {
-    
-}
-
-- (void) testAddObjects {
-    
-}
-
-- (void) testDelegate {
-    
-}
 @end

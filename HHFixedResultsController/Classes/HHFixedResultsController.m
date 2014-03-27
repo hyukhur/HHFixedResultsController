@@ -60,9 +60,11 @@
 @interface HHFixedResultsController ()
 
 #pragma mark - private
-@property (nonatomic) NSMutableArray *objects_;
 @property (nonatomic) NSArray *indexTitles;
 @property (nonatomic) NSDictionary *indexesForSectionName;
+@property (nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, weak) id<NSObject, NSFetchedResultsControllerDelegate> delegate;
+
 
 #pragma mark - public
 @property (nonatomic) NSFetchRequest *fetchRequest;
@@ -71,10 +73,6 @@
 @property (nonatomic) NSString *cacheName;
 @property (nonatomic) NSArray *sections;
 
-#pragma mark - unused
-@property (nonatomic) NSManagedObjectContext *managedObjectContext_;
-@property (nonatomic, weak) id<NSObject, NSFetchedResultsControllerDelegate> delegate_;
-@property (nonatomic) NSArray *sectionIndexTitles_;
 @end
 
 
@@ -92,7 +90,7 @@
     self = [self initWithFetchRequest:fetchRequest objects:nil sectionNameKeyPath:sectionNameKeyPath cacheName:name];
     if (self)
     {
-        self.managedObjectContext_ = context;
+        self.managedObjectContext = context;
     }
     return self;
 }
@@ -126,21 +124,6 @@
     return YES;
 }
 
-- (NSManagedObjectContext *)managedObjectContext
-{
-    return self.managedObjectContext_;
-}
-
-
-- (id<NSFetchedResultsControllerDelegate>)delegate
-{
-    return self.delegate_;
-}
-
-- (void)setDelegate:(id<NSFetchedResultsControllerDelegate>)delegate
-{
-    self.delegate_ = (id<NSObject, NSFetchedResultsControllerDelegate>)delegate;
-}
 
 + (void)deleteCacheWithName:(NSString *)name
 {
@@ -182,8 +165,8 @@
 
 - (NSString *)sectionIndexTitleForSectionName:(NSString *)sectionName
 {
-    if ([self.delegate_ respondsToSelector:@selector(controller:sectionIndexTitleForSectionName:)]) {
-        return [self.delegate_ controller:(NSFetchedResultsController *)self sectionIndexTitleForSectionName:sectionName];
+    if ([self.delegate respondsToSelector:@selector(controller:sectionIndexTitleForSectionName:)]) {
+        return [self.delegate controller:(NSFetchedResultsController *)self sectionIndexTitleForSectionName:sectionName];
     }
     return sectionName;
 }
@@ -220,12 +203,12 @@
 
 - (void)addObject:(id)object
 {
-    
+    self.objects = [self.objects arrayByAddingObject:object];
 }
 
 - (void)addObjectFromArray:(NSArray *)objects
 {
-    
+    self.objects = [self.objects arrayByAddingObjectsFromArray:objects];
 }
 @end
 
