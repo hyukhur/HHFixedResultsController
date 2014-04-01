@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.author             = { "Hyuk Hur" => "hyukhur@gmail.com" }
   s.social_media_url   = "http://twitter.com/hyukhur"
-  s.platform     = :ios, "5.0"
+  s.platform     = :ios, "4.3"
   s.source       = { :git => "https://github.com/hyukhur/HHFixedResultsController.git", :tag => "0.0.1" }
   s.source_files  = "HHFixedResultsController/Classes", "Classes/**/*.{h,m}"
   s.public_header_files = "HHFixedResultsController/Classes/**/*.h"

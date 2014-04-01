@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		048910F2D9EB40A2884DE712 /* libPods-HHFixedResultsControllerTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98CF39F8AE8F4771AF3EC3F0 /* libPods-HHFixedResultsControllerTests.a */; };
 		4D3D547E18CE33CA00795CC3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D3D547D18CE33CA00795CC3 /* Foundation.framework */; };
 		4D3D548018CE33CA00795CC3 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D3D547F18CE33CA00795CC3 /* CoreGraphics.framework */; };
 		4D3D548218CE33CA00795CC3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D3D548118CE33CA00795CC3 /* UIKit.framework */; };
@@ -24,6 +25,7 @@
 		4D3D54AC18CE33CA00795CC3 /* HHFixedResultsControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D54AB18CE33CA00795CC3 /* HHFixedResultsControllerTests.m */; };
 		4D3D54B818CE341300795CC3 /* HHFixedResultsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D54B718CE341300795CC3 /* HHFixedResultsController.m */; };
 		4D3D54B918CE341900795CC3 /* HHFixedResultsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D54B718CE341300795CC3 /* HHFixedResultsController.m */; };
+		4DBA32FF18E9BBB700D13232 /* HHFetchedResultControllerDelegateTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DBA32FE18E9BBB700D13232 /* HHFetchedResultControllerDelegateTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +61,10 @@
 		4D3D54AB18CE33CA00795CC3 /* HHFixedResultsControllerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HHFixedResultsControllerTests.m; sourceTree = "<group>"; };
 		4D3D54B618CE341300795CC3 /* HHFixedResultsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HHFixedResultsController.h; sourceTree = "<group>"; };
 		4D3D54B718CE341300795CC3 /* HHFixedResultsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HHFixedResultsController.m; sourceTree = "<group>"; };
+		4DBA32FE18E9BBB700D13232 /* HHFetchedResultControllerDelegateTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HHFetchedResultControllerDelegateTest.m; sourceTree = "<group>"; };
+		4DBA330018EB238200D13232 /* HHFixedResultsController.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; fileEncoding = 4; path = HHFixedResultsController.podspec; sourceTree = "<group>"; };
+		98CF39F8AE8F4771AF3EC3F0 /* libPods-HHFixedResultsControllerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HHFixedResultsControllerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A3ABB85ACEBB4B19BB208C77 /* Pods-HHFixedResultsControllerTests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HHFixedResultsControllerTests.xcconfig"; path = "Pods/Pods-HHFixedResultsControllerTests.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +85,7 @@
 				4D3D54A018CE33CA00795CC3 /* XCTest.framework in Frameworks */,
 				4D3D54A218CE33CA00795CC3 /* UIKit.framework in Frameworks */,
 				4D3D54A118CE33CA00795CC3 /* Foundation.framework in Frameworks */,
+				048910F2D9EB40A2884DE712 /* libPods-HHFixedResultsControllerTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,6 +99,8 @@
 				4D3D54A518CE33CA00795CC3 /* HHFixedResultsControllerTests */,
 				4D3D547C18CE33CA00795CC3 /* Frameworks */,
 				4D3D547B18CE33CA00795CC3 /* Products */,
+				A3ABB85ACEBB4B19BB208C77 /* Pods-HHFixedResultsControllerTests.xcconfig */,
+				4DBA330018EB238200D13232 /* HHFixedResultsController.podspec */,
 			);
 			sourceTree = "<group>";
 		};
@@ -111,6 +120,7 @@
 				4D3D547F18CE33CA00795CC3 /* CoreGraphics.framework */,
 				4D3D548118CE33CA00795CC3 /* UIKit.framework */,
 				4D3D549F18CE33CA00795CC3 /* XCTest.framework */,
+				98CF39F8AE8F4771AF3EC3F0 /* libPods-HHFixedResultsControllerTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -145,6 +155,7 @@
 		4D3D54A518CE33CA00795CC3 /* HHFixedResultsControllerTests */ = {
 			isa = PBXGroup;
 			children = (
+				4DBA32FE18E9BBB700D13232 /* HHFetchedResultControllerDelegateTest.m */,
 				4D3D54AB18CE33CA00795CC3 /* HHFixedResultsControllerTests.m */,
 				4D3D54A618CE33CA00795CC3 /* Supporting Files */,
 			);
@@ -193,9 +204,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4D3D54B218CE33CA00795CC3 /* Build configuration list for PBXNativeTarget "HHFixedResultsControllerTests" */;
 			buildPhases = (
+				1F258AC6023F4FEBBD6868B8 /* Check Pods Manifest.lock */,
 				4D3D549A18CE33CA00795CC3 /* Sources */,
 				4D3D549B18CE33CA00795CC3 /* Frameworks */,
 				4D3D549C18CE33CA00795CC3 /* Resources */,
+				AB677C6DBE0244B3BCB77B04 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -263,6 +276,39 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		1F258AC6023F4FEBBD6868B8 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		AB677C6DBE0244B3BCB77B04 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-HHFixedResultsControllerTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		4D3D547618CE33CA00795CC3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -281,6 +327,7 @@
 			files = (
 				4D3D54AC18CE33CA00795CC3 /* HHFixedResultsControllerTests.m in Sources */,
 				4D3D54B918CE341900795CC3 /* HHFixedResultsController.m in Sources */,
+				4DBA32FF18E9BBB700D13232 /* HHFetchedResultControllerDelegateTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,7 +410,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -397,7 +445,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -412,6 +461,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HHFixedResultsController/HHFixedResultsController-Prefix.pch";
 				INFOPLIST_FILE = "HHFixedResultsController/HHFixedResultsController-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -425,6 +475,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HHFixedResultsController/HHFixedResultsController-Prefix.pch";
 				INFOPLIST_FILE = "HHFixedResultsController/HHFixedResultsController-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -432,6 +483,7 @@
 		};
 		4D3D54B318CE33CA00795CC3 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A3ABB85ACEBB4B19BB208C77 /* Pods-HHFixedResultsControllerTests.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/HHFixedResultsController.app/HHFixedResultsController";
@@ -455,6 +507,7 @@
 		};
 		4D3D54B418CE33CA00795CC3 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A3ABB85ACEBB4B19BB208C77 /* Pods-HHFixedResultsControllerTests.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/HHFixedResultsController.app/HHFixedResultsController";
