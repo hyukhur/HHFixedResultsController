@@ -1,0 +1,3 @@
+language: objective-c
+#befor_install:
+#  - gem install cocoapods --no-rdoc --no-ri --no-docuemnt --quiet
