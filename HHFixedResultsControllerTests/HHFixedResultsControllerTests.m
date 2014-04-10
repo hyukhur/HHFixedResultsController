@@ -106,7 +106,7 @@
     NSIndexPath *expectedIndexPath = [self.frc indexPathForObject:lastObject];
     XCTAssertNotNil(lastObject);
     XCTAssertNotNil(expectedIndexPath);
-    XCTAssertNotEqual(indexPath, expectedIndexPath);
+    XCTAssertEqual(indexPath, expectedIndexPath);
     XCTAssertEqual(indexPath.section, expectedIndexPath.section);
     XCTAssertEqual(indexPath.row, expectedIndexPath.row);
     
