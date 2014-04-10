@@ -7,6 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <OCMock/OCMock.h>
 #import "HHFixedResultsController.h"
 #import <CoreData/CoreData.h>
 
@@ -39,6 +40,8 @@
                 sectionNameKeyPath:@"type"
                 cacheName:nil];
     [self.frc performFetch:nil];
+    id<NSFetchedResultsControllerDelegate> delegate = [OCMockObject mockForProtocol:@protocol(NSFetchedResultsControllerDelegate)];
+    self.frc.delegate = delegate;
 }
 
 - (void)tearDown
