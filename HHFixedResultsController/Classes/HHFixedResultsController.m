@@ -67,6 +67,7 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
 @property (nonatomic) NSDictionary *indexesForSectionName;
 @property (nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, weak) id<NSObject, NSFetchedResultsControllerDelegate> delegate;
+@property (nonatomic, weak) id<NSObject, NSFetchedResultsControllerDelegate> previousDelegate;
 
 
 #pragma mark - public
@@ -117,7 +118,7 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
 
 
 @implementation HHFixedResultsController (NSFetchedResultsController)
-@dynamic fetchRequest, managedObjectContext, sectionNameKeyPath, cacheName, delegate, fetchedObjects, sectionIndexTitles, sections;
+//@dynamic fetchRequest, managedObjectContext, sectionNameKeyPath, cacheName, delegate, fetchedObjects, sectionIndexTitles, sections;
 
 - (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest managedObjectContext: (NSManagedObjectContext *)context sectionNameKeyPath:(NSString *)sectionNameKeyPath cacheName:(NSString *)name
 {
@@ -135,36 +136,39 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
 - (BOOL)performFetch:(NSError **)error
 {
     NSArray *sFetchedObjects = [[self.objects filteredArrayUsingPredicate:self.fetchRequest.predicate] sortedArrayUsingDescriptors:self.fetchRequest.sortDescriptors];
-    BOOL hasChanged = [[self fetchObjectsChangedSpecs] indexOfObjectPassingTest:^BOOL(HHObjectsChangingSpecBlock specBlock, NSUInteger idx, BOOL *stop) {
+    BOOL hasChanged = self.previousDelegate != self.delegate;
+    hasChanged |= [[self fetchObjectsChangedSpecs] indexOfObjectPassingTest:^BOOL(HHObjectsChangingSpecBlock specBlock, NSUInteger idx, BOOL *stop) {
         return specBlock(sFetchedObjects, self.fetchedObjects);
     }] != NSNotFound;
     if (hasChanged) {
         [self willChangeContent];
         self.fetchedObjects = sFetchedObjects;
+        
+        NSMutableDictionary *indexesForSectionName = [NSMutableDictionary dictionary];
+        NSMutableDictionary *sectionsByName = [NSMutableDictionary dictionary];
+        NSMutableOrderedSet *sections = [NSMutableOrderedSet orderedSet];
+        for (id object in self.fetchedObjects) {
+            id sectionName =  object[self.sectionNameKeyPath?:@""];
+            HHSectionInfo *sectionInfo = sectionsByName[sectionName?:@""];
+            if (!sectionInfo)
+            {
+                sectionInfo = [[HHSectionInfo alloc] init];
+                sectionInfo.name = [sectionName description];
+                sectionInfo.indexTitle = [self sectionIndexTitleForSectionName:sectionInfo.name] ?: sectionInfo.name;
+                [sections addObject:sectionInfo];
+                sectionsByName[sectionInfo.name?:@""] = sectionInfo;
+                indexesForSectionName[sectionInfo.indexTitle?:@""] = indexesForSectionName[sectionInfo.indexTitle?:@""] ?: @([sections count] - 1 );
+            }
+            [sectionInfo.objects addObject:object];
+        }
+        self.sections = [[sections filteredOrderedSetUsingPredicate:[NSPredicate predicateWithFormat:@"objects.@count > 0"]] array];
+        self.indexTitles = [[NSOrderedSet orderedSetWithArray:[self.sections valueForKey:@"indexTitle"]] array];
+        self.indexesForSectionName = [indexesForSectionName copy];
+        
         [self didChangeContent];
     }
     
-    NSMutableDictionary *indexesForSectionName = [NSMutableDictionary dictionary];
-    NSMutableDictionary *sectionsByName = [NSMutableDictionary dictionary];
-    NSMutableOrderedSet *sections = [NSMutableOrderedSet orderedSet];
-    for (id object in self.fetchedObjects) {
-        id sectionName =  object[self.sectionNameKeyPath?:@""];
-        HHSectionInfo *sectionInfo = sectionsByName[sectionName?:@""];
-        if (!sectionInfo)
-        {
-            sectionInfo = [[HHSectionInfo alloc] init];
-            sectionInfo.name = [sectionName description];
-            sectionInfo.indexTitle = [self sectionIndexTitleForSectionName:sectionInfo.name] ?: sectionInfo.name;
-            [sections addObject:sectionInfo];
-            sectionsByName[sectionInfo.name?:@""] = sectionInfo;
-            indexesForSectionName[sectionInfo.indexTitle?:@""] = indexesForSectionName[sectionInfo.indexTitle?:@""] ?: @([sections count] - 1 );
-        }
-        [sectionInfo.objects addObject:object];
-    }
-    self.sections = [[sections filteredOrderedSetUsingPredicate:[NSPredicate predicateWithFormat:@"objects.@count > 0"]] array];
-    self.indexTitles = [[NSOrderedSet orderedSetWithArray:[self.sections valueForKey:@"indexTitle"]] array];
-    self.indexesForSectionName = [indexesForSectionName copy];
-    
+    self.previousDelegate = self.delegate;
     return YES;
 }
 

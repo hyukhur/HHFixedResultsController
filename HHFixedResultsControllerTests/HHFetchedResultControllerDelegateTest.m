@@ -194,6 +194,15 @@
 
 
 - (void) testWillNotAndDidNotChangeContentAndDidChangeContent {
+    [[(OCMockObject *)self.frc.delegate stub] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate stub] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
+    
+    [self.frc performFetch:nil];
+    [(OCMockObject *)self.frc.delegate verify];
+    
+    [[(OCMockObject *)self.frc.delegate reject] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate reject] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
     [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
 
     [self.frc performFetch:nil];
@@ -211,7 +220,35 @@
 
 //- (NSString *)controller:(NSFetchedResultsController *)controller sectionIndexTitleForSectionName:(NSString *)sectionName __OSX_AVAILABLE_STARTING(__MAC_NA,__IPHONE_4_0);
 - (void) testSectionIndexTitleForSectionName {
-    XCTFail(@"Not Yet Implemented");
+    [self.frc setObjects:nil];
+    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:@"1type"];
+    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:@"2type"];
+    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:@"1types"];
+    [[(OCMockObject *)self.frc.delegate stub] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate stub] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
+    
+    [self.frc setObjects:self.objects];
+    [self.frc performFetch:nil];
+    [(OCMockObject *)self.frc.delegate verify];
+}
+
+
+- (void) testSectionIndexTitleForSectionNameWithoutChanged {
+    [[(OCMockObject *)self.frc.delegate stub] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate stub] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
+
+    [self.frc setObjects:self.objects];
+    [self.frc performFetch:nil];
+    [(OCMockObject *)self.frc.delegate verify];
+
+    [[(OCMockObject *)self.frc.delegate reject] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate reject] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate reject] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
+
+    [self.frc setObjects:self.objects];
+    [self.frc performFetch:nil];
+    [(OCMockObject *)self.frc.delegate verify];
 }
 
 @end
