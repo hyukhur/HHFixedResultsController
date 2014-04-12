@@ -129,6 +129,9 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
     return self;
 }
 
+/*
+ if the fetch request doesn’t include a sort descriptor that uses the section name key path specified
+ */
 - (BOOL)performFetch:(NSError **)error
 {
     NSArray *sFetchedObjects = [[self.objects filteredArrayUsingPredicate:self.fetchRequest.predicate] sortedArrayUsingDescriptors:self.fetchRequest.sortDescriptors];
@@ -210,6 +213,10 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
         return [self.delegate controller:(NSFetchedResultsController *)self sectionIndexTitleForSectionName:sectionName];
     }
     return sectionName;
+    /*
+     The default implementation returns the capitalized first letter of the section name.
+     */
+    return [sectionName length] > 0 ? [NSString stringWithFormat: @"%C", [[sectionName capitalizedString] characterAtIndex:0]] : sectionName;
 }
 
 - (NSArray *)sectionIndexTitles

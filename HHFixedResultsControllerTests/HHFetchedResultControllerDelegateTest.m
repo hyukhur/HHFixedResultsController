@@ -50,6 +50,10 @@
     [super tearDown];
 }
 
+
+
+#pragma mark - each object change
+
 //- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath;
 - (void) testDidChangeObjectWithNSFetchedResultsChangeInsert {
     XCTFail(@"Not Yet Implemented");
@@ -70,6 +74,9 @@
     XCTFail(@"Not Yet Implemented");
 }
 
+
+#pragma mark - sections
+
 //- (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type;
 - (void) testDidChangeSectionWithNSFetchedResultsChangeInsert {
     XCTFail(@"Not Yet Implemented");
@@ -80,6 +87,8 @@
     XCTFail(@"Not Yet Implemented");
 }
 
+
+#pragma mark - something chagned
 
 - (void) testWillAndDidChangeContentAndDidChangeContentWhenObjectRemoved {
     [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
@@ -191,6 +200,8 @@
     [(OCMockObject *)self.frc.delegate verify];
 }
 
+
+#pragma mark - KVO
 
 //- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller;
 - (void) testWillAndDidChangeContentWithoutPerfomPatch {
