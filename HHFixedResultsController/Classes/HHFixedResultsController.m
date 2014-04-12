@@ -10,6 +10,9 @@
 #import <CoreData/CoreData.h>
 
 
+typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *newFetchedObjects);
+
+
 @interface HHSectionInfo : NSObject  <NSFetchedResultsSectionInfo>
 @property (nonatomic) NSString *name;
 @property (nonatomic) NSString *indexTitle;
@@ -79,6 +82,37 @@
 @implementation HHFixedResultsController (Private)
 
 
+- (void)willChangeContent
+{
+    if ([self.delegate respondsToSelector:@selector(controllerWillChangeContent:)]) {
+        [self.delegate performSelector:@selector(controllerWillChangeContent:) withObject:self];
+    }
+}
+
+
+- (void)didChangeContent
+{
+    if ([self.delegate respondsToSelector:@selector(controllerDidChangeContent:)]) {
+        [self.delegate performSelector:@selector(controllerDidChangeContent:) withObject:self];
+    }
+}
+
+
+- (NSArray *)fetchObjectsChangedSpecs
+{
+    return @[
+             (HHObjectsChangingSpecBlock) ^(NSArray *oldFetchedObjects, NSArray *newFetchedObjects) {
+                 return ([oldFetchedObjects count] != [newFetchedObjects count]);
+             },
+             (HHObjectsChangingSpecBlock) ^(NSArray *oldFetchedObjects, NSArray *newFetchedObjects) {
+                 return ([oldFetchedObjects indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+                     return [newFetchedObjects indexOfObjectIdenticalTo:obj] != idx;
+                 }] != NSNotFound);
+             },
+             ];
+}
+
+
 @end
 
 
@@ -98,7 +132,14 @@
 - (BOOL)performFetch:(NSError **)error
 {
     NSArray *sFetchedObjects = [[self.objects filteredArrayUsingPredicate:self.fetchRequest.predicate] sortedArrayUsingDescriptors:self.fetchRequest.sortDescriptors];
-    self.fetchedObjects = sFetchedObjects;
+    BOOL hasChanged = [[self fetchObjectsChangedSpecs] indexOfObjectPassingTest:^BOOL(HHObjectsChangingSpecBlock specBlock, NSUInteger idx, BOOL *stop) {
+        return specBlock(sFetchedObjects, self.fetchedObjects);
+    }] != NSNotFound;
+    if (hasChanged) {
+        [self willChangeContent];
+        self.fetchedObjects = sFetchedObjects;
+        [self didChangeContent];
+    }
     
     NSMutableDictionary *indexesForSectionName = [NSMutableDictionary dictionary];
     NSMutableDictionary *sectionsByName = [NSMutableDictionary dictionary];

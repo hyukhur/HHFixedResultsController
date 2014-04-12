@@ -52,48 +52,155 @@
 
 //- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath;
 - (void) testDidChangeObjectWithNSFetchedResultsChangeInsert {
-    
+    XCTFail(@"Not Yet Implemented");
 }
 
 //- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath;
 - (void) testDidChangeObjectWithNSFetchedResultsChangeDelete {
-    
+    XCTFail(@"Not Yet Implemented");
 }
 
 //- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath;
 - (void) testDidChangeObjectWithNSFetchedResultsChangeMove {
-    
+    XCTFail(@"Not Yet Implemented");
 }
 
 //- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath;
 - (void) testDidChangeObjectWithNSFetchedResultsChangeUpdate {
-    
+    XCTFail(@"Not Yet Implemented");
 }
 
 //- (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type;
 - (void) testDidChangeSectionWithNSFetchedResultsChangeInsert {
-    
+    XCTFail(@"Not Yet Implemented");
 }
 
 //- (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type;
 - (void) testDidChangeSectionWithNSFetchedResultsChangeDelete {
+    XCTFail(@"Not Yet Implemented");
+}
 
+
+- (void) testWillAndDidChangeContentAndDidChangeContentWhenObjectRemoved {
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
+    [[(OCMockObject *)self.frc.delegate expect] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate expect] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
+    
+    NSArray *changedObjects = @[
+                @{@"type":@"1type", @"title":@"title one", @"detail":@"test value1", @"type2":@""},
+                @{@"type":@"2type", @"title":@"title two", @"detail":@"test value2", @"type2":@""},
+                @{@"type":@"1types",@"title":@"title fouth", @"detail":@"test value4", @"type2":@""},
+                @{@"type":@"1type", @"title":@"title zero", @"detail":@"test value0", @"type2":@""},
+                ];
+    
+    [self.frc setObjects:changedObjects];
+    [self.frc performFetch:nil];
+    [(OCMockObject *)self.frc.delegate verify];
+}
+
+- (void) testWillAndDidChangeContentAndDidChangeContentWhenObjectAdded {
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
+    [[(OCMockObject *)self.frc.delegate expect] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate expect] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
+    
+    NSArray *changedObjects = @[
+                                @{@"type":@"1type", @"title":@"title one", @"detail":@"test value1", @"type2":@""},
+                                @{@"type":@"2type", @"title":@"title two", @"detail":@"test value2", @"type2":@""},
+                                @{@"type":@"1types",@"title":@"title fouth", @"detail":@"test value4", @"type2":@""},
+                                @{@"type":@"1type", @"title":@"title zero", @"detail":@"test value0", @"type2":@""},
+                                @{@"type":@"1type", @"title":@"title", @"detail":@"test value0", @"type2":@""},
+                                @{@"type":@"1type", @"title":@"title five", @"detail":@"test value5", @"type2":@""},
+                                ];
+    
+    [self.frc setObjects:changedObjects];
+    [self.frc performFetch:nil];
+    [(OCMockObject *)self.frc.delegate verify];
+}
+
+
+- (void) testWillAndDidChangeContentAndDidChangeContentWhenAnObjectAdded {
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
+    [[(OCMockObject *)self.frc.delegate expect] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate expect] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
+
+    [self.frc addObject:@{@"type":@"1type", @"title":@"title five", @"detail":@"test value5", @"type2":@""}];
+    [self.frc performFetch:nil];
+    [(OCMockObject *)self.frc.delegate verify];
+}
+
+- (void) testWillAndDidChangeContentAndDidChangeContentWhenObjectMoved {
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
+    [[(OCMockObject *)self.frc.delegate expect] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate expect] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
+    
+    NSArray *changedObjects = @[
+                                @{@"type":@"1type", @"title":@"title one", @"detail":@"test value1", @"type2":@""},
+                                @{@"type":@"1types",@"title":@"title fouth", @"detail":@"test value4", @"type2":@""},
+                                @{@"type":@"2type", @"title":@"title two", @"detail":@"test value2", @"type2":@""},
+                                @{@"type":@"1type", @"title":@"title", @"detail":@"test value0", @"type2":@""},
+                                @{@"type":@"1type", @"title":@"title zero", @"detail":@"test value0", @"type2":@""},
+                                ];
+    
+    [self.frc setObjects:changedObjects];
+    [self.frc performFetch:nil];
+    [(OCMockObject *)self.frc.delegate verify];
+}
+
+
+- (void) testWillAndDidChangeContentAndDidChangeContentWhenObjectChanged {
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
+    [[(OCMockObject *)self.frc.delegate expect] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate expect] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
+    
+    NSArray *changedObjects = @[
+                                @{@"type":@"1type", @"title":@"title 1", @"detail":@"test value one", @"type2":@""},
+                                @{@"type":@"2type", @"title":@"title 2", @"detail":@"test value two", @"type2":@""},
+                                @{@"type":@"1types",@"title":@"title 4", @"detail":@"test value four", @"type2":@""},
+                                @{@"type":@"1type", @"title":@"title 0", @"detail":@"test value zero", @"type2":@""},
+                                @{@"type":@"1type", @"title":@"title", @"detail":@"test value0", @"type2":@""},
+                                ];
+    
+    [self.frc setObjects:changedObjects];
+    [self.frc performFetch:nil];
+    [(OCMockObject *)self.frc.delegate verify];
+}
+
+- (void) testWillAndDidChangeContentAndDidChangeContentWhenSectionChanged {
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
+    [[(OCMockObject *)self.frc.delegate expect] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate expect] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
+    
+    NSArray *changedObjects = @[
+                                @{@"type":@"type", @"title":@"title one", @"detail":@"test value1", @"type2":@""},
+                                @{@"type":@"type", @"title":@"title two", @"detail":@"test value2", @"type2":@""},
+                                @{@"type":@"types",@"title":@"title fouth", @"detail":@"test value4", @"type2":@""},
+                                @{@"type":@"type", @"title":@"title zero", @"detail":@"test value0", @"type2":@""},
+                                @{@"type":@"type", @"title":@"title", @"detail":@"test value0", @"type2":@""},
+                                ];
+
+    [self.frc setObjects:changedObjects];
+    [self.frc performFetch:nil];
+    [(OCMockObject *)self.frc.delegate verify];
+}
+
+
+- (void) testWillNotAndDidNotChangeContentAndDidChangeContent {
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
+
+    [self.frc performFetch:nil];
+    [(OCMockObject *)self.frc.delegate verify];
 }
 
 
 //- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller;
-- (void) testWillChangeContent {
-    
+- (void) testWillAndDidChangeContentWithoutPerfomPatch {
+    XCTFail(@"Not Yet Implemented");
 }
 
-//- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller;
-- (void) testDidChangeContent {
-    
-}
 
 //- (NSString *)controller:(NSFetchedResultsController *)controller sectionIndexTitleForSectionName:(NSString *)sectionName __OSX_AVAILABLE_STARTING(__MAC_NA,__IPHONE_4_0);
 - (void) testSectionIndexTitleForSectionName {
-    
+    XCTFail(@"Not Yet Implemented");
 }
 
 @end
