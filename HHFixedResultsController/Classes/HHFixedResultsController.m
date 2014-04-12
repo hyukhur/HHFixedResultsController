@@ -216,7 +216,6 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
     if ([self.delegate respondsToSelector:@selector(controller:sectionIndexTitleForSectionName:)]) {
         return [self.delegate controller:(NSFetchedResultsController *)self sectionIndexTitleForSectionName:sectionName];
     }
-    return sectionName;
     /*
      The default implementation returns the capitalized first letter of the section name.
      */
