@@ -60,7 +60,7 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"%@ ( name : %@ \t indexTitle: %@ )", [super description], self.name, self.indexTitle];
+    return [NSString stringWithFormat:@"%@ ( name : %@ \t indexTitle: %@ with %@ )", [super description], self.name, self.indexTitle, self.objects];
 }
 @end
 
@@ -111,6 +111,24 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
     }
 }
 
+- (void)didChangeObjects:(NSArray *)oldObjects atOldIndex:(NSUInteger)oldSectionIndex newObjects:(NSArray *)newObjects atNewIndex:(NSUInteger)newSectionIndex
+{
+    if ([self.delegate respondsToSelector:@selector(controller:didChangeObject:atIndexPath:forChangeType:newIndexPath:)]) {
+        NSMutableOrderedSet *unionObjects = [NSMutableOrderedSet orderedSetWithArray:oldObjects];
+        [unionObjects addObjectsFromArray:newObjects];
+        [unionObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
+            NSUInteger oldIndex = [oldObjects indexOfObject:obj];
+            NSUInteger newIndex = [newObjects indexOfObject:obj];
+            NSFetchedResultsChangeType type = oldIndex == NSNotFound && newIndex != NSNotFound ? NSFetchedResultsChangeInsert : oldIndex != NSNotFound && newIndex == NSNotFound ? NSFetchedResultsChangeDelete : NSFetchedResultsChangeMove;
+            if ( oldIndex != newIndex || type != NSFetchedResultsChangeMove )
+            {
+                NSIndexPath *oldIndexPath = oldSectionIndex == NSNotFound || oldIndex == NSNotFound ? nil : [NSIndexPath indexPathForRow:oldIndex inSection:oldSectionIndex];
+                NSIndexPath *newIndexPath = newSectionIndex == NSNotFound || newIndex == NSNotFound ? nil : [NSIndexPath indexPathForRow:newIndex inSection:newSectionIndex];
+                [self.delegate controller:(NSFetchedResultsController *)self didChangeObject:obj atIndexPath:oldIndexPath forChangeType:type newIndexPath:newIndexPath];
+            }
+        }];
+    }
+}
 
 
 - (NSArray *)fetchObjectsChangedSpecs
@@ -130,17 +148,20 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
 
 - (void)didChangeSection:(NSOrderedSet *)oldSet newSection:(NSOrderedSet *)newSet
 {
-    NSMutableOrderedSet *inserted = [newSet mutableCopy];
-    [inserted minusOrderedSet:oldSet];
-    [inserted enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        [self didChangeSection:obj atIndex:[newSet indexOfObject:obj] forChangeType:(NSFetchedResultsChangeInsert)];
-    }];
-    
-    NSMutableOrderedSet *deleted = [oldSet mutableCopy];
-    [deleted minusOrderedSet:newSet];
-    
-    [deleted enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        [self didChangeSection:obj atIndex:[oldSet indexOfObject:obj] forChangeType:(NSFetchedResultsChangeDelete)];
+    NSMutableOrderedSet *unionObjects = [oldSet mutableCopy];
+    [unionObjects unionOrderedSet:newSet];
+    [unionObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        NSUInteger oldIndex = [oldSet indexOfObject:obj];
+        NSUInteger newIndex = [newSet indexOfObject:obj];
+        if (oldIndex != newIndex)
+        {
+            NSUInteger index = oldIndex == NSNotFound ? newIndex : oldIndex;
+            NSFetchedResultsChangeType type = oldIndex == NSNotFound ? NSFetchedResultsChangeInsert : NSFetchedResultsChangeDelete;
+            [self didChangeSection:obj atIndex:index forChangeType:type];
+        }
+        NSArray *oldObjects = oldIndex == NSNotFound ? nil : [[oldSet objectAtIndex:oldIndex] objects];
+        NSArray *newObjects = newIndex == NSNotFound ? nil : [[newSet objectAtIndex:newIndex] objects];
+        [self didChangeObjects:oldObjects atOldIndex:oldIndex newObjects:newObjects atNewIndex:newIndex];
     }];
 }
 
@@ -148,7 +169,7 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
 
 
 @implementation HHFixedResultsController (NSFetchedResultsController)
-//@dynamic fetchRequest, managedObjectContext, sectionNameKeyPath, cacheName, delegate, fetchedObjects, sectionIndexTitles, sections;
+
 
 - (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest managedObjectContext: (NSManagedObjectContext *)context sectionNameKeyPath:(NSString *)sectionNameKeyPath cacheName:(NSString *)name
 {
