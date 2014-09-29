@@ -15,6 +15,7 @@
 - (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest objects:(NSArray *)kvcObjects sectionNameKeyPath:(NSString *)sectionNameKeyPath cacheName:(NSString *)name;
 - (void)addObject:(id)object;
 - (void)addObjectFromArray:(NSArray *)objects;
+- (void)notifiyChangeObject:(id)object key:(id)key oldValue:(id)oldValue newValue:(id)newValue;
 @end
 
 

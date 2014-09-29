@@ -322,5 +322,23 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
 {
     self.objects = [self.objects arrayByAddingObjectsFromArray:objects];
 }
+
+- (void)notifiyChangeObject:(id)object key:(id)key oldValue:(id)oldValue newValue:(id)newValue
+{
+    if ([oldValue isEqual:newValue]) {
+        return;
+    }
+    if (!object) {
+        return;
+    }
+    if (![self.objects containsObject:object]) {
+        return;
+    }
+    [self willChangeContent];
+    NSIndexPath *indexPath = [self indexPathForObject:object];
+    [self.delegate controller:(NSFetchedResultsController *)self didChangeObject:object atIndexPath:indexPath forChangeType:(NSFetchedResultsChangeUpdate) newIndexPath:indexPath];
+    [self didChangeContent];
+}
+
 @end
 

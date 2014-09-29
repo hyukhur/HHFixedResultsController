@@ -328,19 +328,6 @@
 #pragma mark - KVO
 
 - (void) testWillAndDidChangeContentWithoutPerfomPatch {
-    NSMutableDictionary *object = [@{@"type":@"1type", @"title":@"title one", @"detail":@"test value1", @"type2":@""} mutableCopy];
-    
-    NSArray *changedObjects = @[
-                                object,
-                                @{@"type":@"2type", @"title":@"title two", @"detail":@"test value2", @"type2":@""},
-                                @{@"type":@"1types",@"title":@"title fouth", @"detail":@"test value4", @"type2":@""},
-                                @{@"type":@"1type", @"title":@"title zero", @"detail":@"test value0", @"type2":@""},
-                                @{@"type":@"1type", @"title":@"title", @"detail":@"test value0", @"type2":@""},
-                                ];
-    
-    [self.frc setObjects:changedObjects];
-    [self.frc performFetch:nil];
-    
     [[(OCMockObject *)self.frc.delegate expect] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
     [[(OCMockObject *)self.frc.delegate expect] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
     [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
@@ -348,7 +335,8 @@
     
     [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc didChangeObject:OCMOCK_ANY atIndexPath:OCMOCK_ANY forChangeType:(NSFetchedResultsChangeUpdate) newIndexPath:OCMOCK_ANY];
     
-    object[@"detail"] = @"value1 test";
+    self.objects[0][@"detail"] = @"value1 test";
+    [(HHFixedResultsController *)self.frc notifiyChangeObject:self.objects[0] key:@"detail" oldValue:@"test value1" newValue:@"value1 test"];
     [(OCMockObject *)self.frc.delegate verify];
 }
 
@@ -357,32 +345,34 @@
  An update is reported when an object’s state changes, but the changed attributes aren’t part of the sort keys.
  */
 - (void) testDidChangeObjectWithNSFetchedResultsChangeUpdate {
-    NSMutableDictionary *object = [@{@"type":@"1type", @"title":@"title one", @"detail":@"test value1", @"type2":@""} mutableCopy];
-    
-    NSArray *changedObjects = @[
-                                object,
-                                @{@"type":@"2type", @"title":@"title two", @"detail":@"test value2", @"type2":@""},
-                                @{@"type":@"1types",@"title":@"title fouth", @"detail":@"test value4", @"type2":@""},
-                                @{@"type":@"1type", @"title":@"title zero", @"detail":@"test value0", @"type2":@""},
-                                @{@"type":@"1type", @"title":@"title", @"detail":@"test value0", @"type2":@""},
-                                ];
-    
-    [self.frc setObjects:changedObjects];
-    [self.frc performFetch:nil];
-    
     [[(OCMockObject *)self.frc.delegate stub] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
     [[(OCMockObject *)self.frc.delegate stub] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
     [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
     [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeSection:[OCMArg isNotNil] atIndex:0 forChangeType:(NSFetchedResultsChangeInsert)];
     
     [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc didChangeObject:[OCMArg checkWithBlock:^BOOL(id obj) {
-        return [object[@"detail"] isEqualToString:@"value1 test"];
+        return [self.objects[0][@"detail"] isEqualToString:@"value1 test"];
     }] atIndexPath:OCMOCK_ANY forChangeType:(NSFetchedResultsChangeUpdate) newIndexPath:OCMOCK_ANY];
     
-    object[@"detail"] = @"value1 test";
+    self.objects[0][@"detail"] = @"value1 test";
+    [(HHFixedResultsController *)self.frc notifiyChangeObject:self.objects[0] key:@"detail" oldValue:@"test value1" newValue:@"value1 test"];
     [(OCMockObject *)self.frc.delegate verify];
 }
 
+- (void) testDidNotChangeObjectWithNSFetchedResultsChangeUpdate {
+    [[(OCMockObject *)self.frc.delegate stub] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate stub] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeSection:[OCMArg isNotNil] atIndex:0 forChangeType:(NSFetchedResultsChangeInsert)];
+    
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeObject:[OCMArg checkWithBlock:^BOOL(id obj) {
+        return [self.objects[0][@"detail"] isEqualToString:@"test value1"];
+    }] atIndexPath:OCMOCK_ANY forChangeType:(NSFetchedResultsChangeUpdate) newIndexPath:OCMOCK_ANY];
+    
+    self.objects[0][@"detail"] = @"value1 test";
+    [(HHFixedResultsController *)self.frc notifiyChangeObject:self.objects[0] key:@"detail" oldValue:@"test value1" newValue:@"test value1"];
+    [(OCMockObject *)self.frc.delegate verify];
+}
 
 
 @end
