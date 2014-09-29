@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "HHFixedResultsController"
-  s.version      = "0.0.1"
+  s.version      = "0.0.2"
   s.summary      = "collection based result controller as NSFetchedResultsController"
 
   s.description  = <<-DESC
@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.author             = { "Hyuk Hur" => "hyukhur@gmail.com" }
   s.social_media_url   = "http://twitter.com/hyukhur"
   s.platform     = :ios, "5.0"
-  s.source       = { :git => "https://github.com/hyukhur/HHFixedResultsController.git", :tag => "0.0.1" }
+  s.source       = { :git => "https://github.com/hyukhur/HHFixedResultsController.git", :tag => s.version.to_s }
   s.source_files  = "HHFixedResultsController/Classes", "Classes/**/*.{h,m}"
   s.public_header_files = "HHFixedResultsController/Classes/**/*.h"
   s.requires_arc = true
