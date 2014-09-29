@@ -336,6 +336,12 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
     }
     [self willChangeContent];
     NSIndexPath *indexPath = [self indexPathForObject:object];
+//    NSIndexPath *newIndexPath = nil;
+//    if ([self.sectionNameKeyPath isEqualToString:key]) {
+//        
+//    } else {
+//        
+//    }
     [self.delegate controller:(NSFetchedResultsController *)self didChangeObject:object atIndexPath:indexPath forChangeType:(NSFetchedResultsChangeUpdate) newIndexPath:indexPath];
     [self didChangeContent];
 }

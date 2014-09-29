@@ -374,5 +374,19 @@
     [(OCMockObject *)self.frc.delegate verify];
 }
 
+- (void) _testDidChangeObjectWithChangingSectionKeyValue {
+    [[(OCMockObject *)self.frc.delegate stub] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate stub] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
+    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc didChangeSection:[OCMArg isNotNil] atIndex:0 forChangeType:(NSFetchedResultsChangeMove)];
+    
+    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc didChangeObject:[OCMArg checkWithBlock:^BOOL(id obj) {
+        return [self.objects[0][@"detail"] isEqualToString:@"value1 test"];
+    }] atIndexPath:OCMOCK_ANY forChangeType:(NSFetchedResultsChangeUpdate) newIndexPath:OCMOCK_ANY];
+    
+    self.objects[0][@"detail"] = @"value1 test";
+    [(HHFixedResultsController *)self.frc notifiyChangeObject:self.objects[0] key:@"type" oldValue:@"1type" newValue:@"3type"];
+    [(OCMockObject *)self.frc.delegate verify];
+}
 
 @end
