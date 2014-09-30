@@ -290,7 +290,11 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
 
 - (NSInteger)sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)sectionIndex
 {
-    return [self.indexesForSectionName[title] integerValue];
+    NSNumber *index = self.indexesForSectionName[title];
+    if (!index) {
+        return NSNotFound;
+    }
+    return [index integerValue];
 }
 
 @end

@@ -184,6 +184,8 @@
     XCTAssertEqual(1, index);
     index = [self.frc sectionForSectionIndexTitle:@"atypes" atIndex:2];
     XCTAssertEqual(2, index);
+    index = [self.frc sectionForSectionIndexTitle:@"____" atIndex:2];
+    XCTAssertEqual(NSNotFound, index);
     
     [self.frc setDelegate:nil];
     [self.frc performFetch:nil];
