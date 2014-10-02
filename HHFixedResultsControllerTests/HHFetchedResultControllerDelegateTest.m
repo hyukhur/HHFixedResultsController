@@ -70,6 +70,22 @@
     [(OCMockObject *)self.frc.delegate verify];
 }
 
+- (void) testDidChangeFirstObjectWithNSFetchedResultsChangeInsert {
+    [[(OCMockObject *)self.frc.delegate stub] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate stub] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeSection:[OCMArg isNotNil] atIndex:0 forChangeType:(NSFetchedResultsChangeInsert)];
+    
+    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc didChangeObject:OCMOCK_ANY atIndexPath:OCMOCK_ANY forChangeType:(NSFetchedResultsChangeInsert) newIndexPath:OCMOCK_ANY];
+    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc didChangeObject:OCMOCK_ANY atIndexPath:OCMOCK_ANY forChangeType:(NSFetchedResultsChangeMove) newIndexPath:OCMOCK_ANY];
+    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc didChangeObject:OCMOCK_ANY atIndexPath:OCMOCK_ANY forChangeType:(NSFetchedResultsChangeMove) newIndexPath:OCMOCK_ANY];
+
+    
+    [self.frc addObject:@{@"type":@"1type", @"title":@"2 title", @"detail":@"test value", @"type2":@""}];
+    [self.frc performFetch:nil];
+    [(OCMockObject *)self.frc.delegate verify];
+}
+
 /*
  On add and remove operations, only the added/removed object is reported.
  It’s assumed that all objects that come after the affected object are also moved, but these moves are not reported.
@@ -146,6 +162,7 @@
     [[(OCMockObject *)self.frc.delegate stub] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
     [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:OCMOCK_ANY];
     [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc didChangeSection:[OCMArg isNotNil] atIndex:2 forChangeType:(NSFetchedResultsChangeDelete)];
+    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc didChangeObject:[OCMArg isNotEqual:                     @{@"type":@"1types",@"title":@"title fouth", @"detail":@"test value4", @"type2":@""}] atIndexPath:[OCMArg isNotEqual:[NSIndexPath indexPathForRow:2 inSection:0]] forChangeType:(NSFetchedResultsChangeDelete) newIndexPath:[OCMArg isNil]];
     
     NSArray *changedObjects = @[
                                 @{@"type":@"1type", @"title":@"title one", @"detail":@"test value1", @"type2":@""},
@@ -291,13 +308,35 @@
 }
 
 - (void) testSectionIndexTitleForSectionName {
-    [self.frc setObjects:nil];
-    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:@"1type"];
-    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:@"2type"];
-    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:@"1types"];
     [[(OCMockObject *)self.frc.delegate stub] controllerWillChangeContent:(NSFetchedResultsController *)self.frc];
     [[(OCMockObject *)self.frc.delegate stub] controllerDidChangeContent:(NSFetchedResultsController *)self.frc];
-    
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeSection:[OCMArg any] atIndex:0 forChangeType:(NSFetchedResultsChangeDelete)];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeSection:[OCMArg any] atIndex:1 forChangeType:(NSFetchedResultsChangeDelete)];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeSection:[OCMArg any] atIndex:2 forChangeType:(NSFetchedResultsChangeDelete)];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeObject:OCMOCK_ANY atIndexPath:[OCMArg any] forChangeType:NSFetchedResultsChangeDelete newIndexPath:[OCMArg isNil]];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeObject:OCMOCK_ANY atIndexPath:[OCMArg any] forChangeType:NSFetchedResultsChangeDelete newIndexPath:[OCMArg isNil]];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeObject:OCMOCK_ANY atIndexPath:[OCMArg any] forChangeType:NSFetchedResultsChangeDelete newIndexPath:[OCMArg isNil]];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeObject:OCMOCK_ANY atIndexPath:[OCMArg any] forChangeType:NSFetchedResultsChangeDelete newIndexPath:[OCMArg isNil]];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeObject:OCMOCK_ANY atIndexPath:[OCMArg any] forChangeType:NSFetchedResultsChangeDelete newIndexPath:[OCMArg isNil]];
+
+    [self.frc setObjects:nil];
+    [self.frc performFetch:nil];
+    [(OCMockObject *)self.frc.delegate verify];
+
+    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:[OCMArg isNotEqual:@"1type"]];
+    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:[OCMArg isNotEqual:@"2type"]];
+    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:[OCMArg isNotEqual:@"1types"]];
+    [[(OCMockObject *)self.frc.delegate expect] controller:(NSFetchedResultsController *)self.frc sectionIndexTitleForSectionName:[OCMArg isNotEqual:@"1type"]];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeSection:[OCMArg any] atIndex:0 forChangeType:(NSFetchedResultsChangeInsert)];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeSection:[OCMArg any] atIndex:1 forChangeType:(NSFetchedResultsChangeInsert)];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeSection:[OCMArg any] atIndex:2 forChangeType:(NSFetchedResultsChangeInsert)];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeObject:OCMOCK_ANY atIndexPath:[OCMArg isNil] forChangeType:NSFetchedResultsChangeInsert newIndexPath:[OCMArg any]];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeObject:OCMOCK_ANY atIndexPath:[OCMArg isNil] forChangeType:NSFetchedResultsChangeInsert newIndexPath:[OCMArg any]];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeObject:OCMOCK_ANY atIndexPath:[OCMArg isNil] forChangeType:NSFetchedResultsChangeInsert newIndexPath:[OCMArg any]];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeObject:OCMOCK_ANY atIndexPath:[OCMArg isNil] forChangeType:NSFetchedResultsChangeInsert newIndexPath:[OCMArg any]];
+    [[(OCMockObject *)self.frc.delegate stub] controller:(NSFetchedResultsController *)self.frc didChangeObject:OCMOCK_ANY atIndexPath:[OCMArg isNil] forChangeType:NSFetchedResultsChangeInsert newIndexPath:[OCMArg any]];
+
+
     [self.frc setObjects:self.objects];
     [self.frc performFetch:nil];
     [(OCMockObject *)self.frc.delegate verify];

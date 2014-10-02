@@ -18,6 +18,7 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
 @property (nonatomic) NSString *indexTitle;
 @property (nonatomic, readonly) NSUInteger numberOfObjects;
 @property (nonatomic) NSMutableArray *objects;
+@property (nonatomic) NSMutableArray *nextObjects;
 @end
 
 @implementation HHSectionInfo
@@ -27,6 +28,7 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
     self = [super init];
     if (self) {
         _objects = [NSMutableArray array];
+        _nextObjects = [NSMutableArray array];
     }
     return self;
 }
@@ -114,14 +116,20 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
 - (void)didChangeObjects:(NSArray *)oldObjects atOldIndex:(NSUInteger)oldSectionIndex newObjects:(NSArray *)newObjects atNewIndex:(NSUInteger)newSectionIndex
 {
     if ([self.delegate respondsToSelector:@selector(controller:didChangeObject:atIndexPath:forChangeType:newIndexPath:)]) {
-        NSMutableOrderedSet *unionObjects = [NSMutableOrderedSet orderedSetWithArray:oldObjects];
+        NSMutableOrderedSet *unionObjects = [NSMutableOrderedSet orderedSetWithArray:oldObjects?:newObjects];
         [unionObjects addObjectsFromArray:newObjects];
         [unionObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
-            NSUInteger oldIndex = [oldObjects indexOfObject:obj];
-            NSUInteger newIndex = [newObjects indexOfObject:obj];
-            NSFetchedResultsChangeType type = oldIndex == NSNotFound && newIndex != NSNotFound ? NSFetchedResultsChangeInsert : oldIndex != NSNotFound && newIndex == NSNotFound ? NSFetchedResultsChangeDelete : NSFetchedResultsChangeMove;
-            if ( oldIndex != newIndex || type != NSFetchedResultsChangeMove )
-            {
+            NSUInteger oldIndex = oldObjects ? [oldObjects indexOfObject:obj] : NSNotFound;
+            NSUInteger newIndex = newObjects ? [newObjects indexOfObject:obj] : NSNotFound;
+            NSFetchedResultsChangeType type = 0;
+            if (oldIndex == NSNotFound && newIndex != NSNotFound) {
+                type = NSFetchedResultsChangeInsert;
+            } else if (oldIndex != NSNotFound && newIndex == NSNotFound) {
+                type = NSFetchedResultsChangeDelete;
+            } else {
+                type = NSFetchedResultsChangeMove;
+            }
+            if ( oldIndex != newIndex || type != NSFetchedResultsChangeMove ) {
                 NSIndexPath *oldIndexPath = oldSectionIndex == NSNotFound || oldIndex == NSNotFound ? nil : [NSIndexPath indexPathForRow:oldIndex inSection:oldSectionIndex];
                 NSIndexPath *newIndexPath = newSectionIndex == NSNotFound || newIndex == NSNotFound ? nil : [NSIndexPath indexPathForRow:newIndex inSection:newSectionIndex];
                 [self.delegate controller:(NSFetchedResultsController *)self didChangeObject:obj atIndexPath:oldIndexPath forChangeType:type newIndexPath:newIndexPath];
@@ -148,20 +156,25 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
 
 - (void)didChangeSection:(NSOrderedSet *)oldSet newSection:(NSOrderedSet *)newSet
 {
-    NSMutableOrderedSet *unionObjects = [oldSet mutableCopy];
+    NSMutableOrderedSet *unionObjects = [oldSet mutableCopy] ?: [newSet mutableCopy];
     [unionObjects unionOrderedSet:newSet];
     [unionObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         NSUInteger oldIndex = [oldSet indexOfObject:obj];
         NSUInteger newIndex = [newSet indexOfObject:obj];
-        if (oldIndex != newIndex)
-        {
+        if (oldIndex != newIndex) {
             NSUInteger index = oldIndex == NSNotFound ? newIndex : oldIndex;
-            NSFetchedResultsChangeType type = oldIndex == NSNotFound ? NSFetchedResultsChangeInsert : NSFetchedResultsChangeDelete;
+            NSFetchedResultsChangeType type = 0;
+            if (oldIndex == NSNotFound) {
+                type = NSFetchedResultsChangeInsert;
+            } else {
+                type = NSFetchedResultsChangeDelete;
+            }
             [self didChangeSection:obj atIndex:index forChangeType:type];
         }
         NSArray *oldObjects = oldIndex == NSNotFound ? nil : [[oldSet objectAtIndex:oldIndex] objects];
-        NSArray *newObjects = newIndex == NSNotFound ? nil : [[newSet objectAtIndex:newIndex] objects];
+        NSArray *newObjects = newIndex == NSNotFound ? nil : [[newSet objectAtIndex:newIndex] nextObjects];
         [self didChangeObjects:oldObjects atOldIndex:oldIndex newObjects:newObjects atNewIndex:newIndex];
+        
     }];
 }
 
@@ -201,18 +214,23 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
         for (id object in self.fetchedObjects) {
             id sectionName =  object[self.sectionNameKeyPath?:@""];
             HHSectionInfo *sectionInfo = sectionsByName[sectionName?:@""];
-            if (!sectionInfo)
-            {
+            if (!sectionInfo) {
+                sectionInfo = [[self.sectionSet filteredOrderedSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(HHSectionInfo *evaluatedObject, NSDictionary *bindings) {
+                    return [evaluatedObject.name isEqualToString:sectionName];
+                }]] firstObject];
+            }
+            if (!sectionInfo) {
                 sectionInfo = [[HHSectionInfo alloc] init];
                 sectionInfo.name = [sectionName description];
-                sectionInfo.indexTitle = [self sectionIndexTitleForSectionName:sectionInfo.name] ?: sectionInfo.name;
-                [sections addObject:sectionInfo];
-                sectionsByName[sectionInfo.name?:@""] = sectionInfo;
-                indexesForSectionName[sectionInfo.indexTitle?:@""] = indexesForSectionName[sectionInfo.indexTitle?:@""] ?: @([sections count] - 1 );
             }
-            [sectionInfo.objects addObject:object];
+
+            sectionInfo.indexTitle = [self sectionIndexTitleForSectionName:sectionInfo.name] ?: sectionInfo.name;
+            [sections addObject:sectionInfo];
+            sectionsByName[sectionInfo.name?:@""] = sectionInfo;
+            indexesForSectionName[sectionInfo.indexTitle?:@""] = indexesForSectionName[sectionInfo.indexTitle?:@""] ?: @([sections count] - 1 );
+            [sectionInfo.nextObjects addObject:object];
         }
-        [sections filterUsingPredicate:[NSPredicate predicateWithFormat:@"objects.@count > 0"]];
+        [sections filterUsingPredicate:[NSPredicate predicateWithFormat:@"nextObjects.@count > 0"]];
         
         [self didChangeSection:self.sectionSet newSection:sections];
         
@@ -221,6 +239,10 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
         self.indexesForSectionName = [indexesForSectionName copy];
 
         [self didChangeContent];
+        [self.sectionSet enumerateObjectsUsingBlock:^(HHSectionInfo *obj, NSUInteger idx, BOOL *stop) {
+            [obj setObjects:[obj nextObjects]];
+            [obj setNextObjects:[NSMutableArray array]];
+        }];
     }
     
     self.previousDelegate = self.delegate;
