@@ -7,6 +7,6 @@ target "HHFixedResultsController" do
 end
 
 target "HHFixedResultsControllerTests" do
-pod 'OCMock', '~> 2.2.3'
+pod 'OCMock'
 end
 
