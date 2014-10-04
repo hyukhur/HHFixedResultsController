@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "HHFixedResultsController"
-  s.version      = "0.0.2"
+  s.version      = "0.0.3"
   s.summary      = "collection based result controller as NSFetchedResultsController"
 
   s.description  = <<-DESC
