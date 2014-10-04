@@ -129,7 +129,7 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
             } else {
                 type = NSFetchedResultsChangeMove;
             }
-            if ( oldIndex != newIndex || type != NSFetchedResultsChangeMove ) {
+            if (oldIndex != newIndex || type != NSFetchedResultsChangeMove) {
                 NSIndexPath *oldIndexPath = oldSectionIndex == NSNotFound || oldIndex == NSNotFound ? nil : [NSIndexPath indexPathForRow:oldIndex inSection:oldSectionIndex];
                 NSIndexPath *newIndexPath = newSectionIndex == NSNotFound || newIndex == NSNotFound ? nil : [NSIndexPath indexPathForRow:newIndex inSection:newSectionIndex];
                 [self.delegate controller:(NSFetchedResultsController *)self didChangeObject:obj atIndexPath:oldIndexPath forChangeType:type newIndexPath:newIndexPath];
@@ -337,6 +337,11 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
         _cacheName = name;
     }
     return self;
+}
+
+- (NSFetchedResultsController *)fetchedResultsController
+{
+    return (NSFetchedResultsController *)self;
 }
 
 - (void)addObject:(id)object

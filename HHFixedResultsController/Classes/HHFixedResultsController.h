@@ -8,11 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-@class NSFetchRequest;
+@class NSFetchRequest, NSFetchedResultsController;
 
 @interface HHFixedResultsController : NSObject
 @property (nonatomic) NSArray *objects;
 - (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest objects:(NSArray *)kvcObjects sectionNameKeyPath:(NSString *)sectionNameKeyPath cacheName:(NSString *)name;
+- (NSFetchedResultsController *)fetchedResultsController;
 - (void)addObject:(id)object;
 - (void)addObjectFromArray:(NSArray *)objects;
 - (void)notifiyChangeObject:(id)object key:(id)key oldValue:(id)oldValue newValue:(id)newValue;
