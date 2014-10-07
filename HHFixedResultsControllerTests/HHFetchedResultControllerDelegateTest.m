@@ -319,10 +319,10 @@
 
     [[self.delegate expect] controllerWillChangeContent:self.frc];
     [[self.delegate expect] controllerDidChangeContent:self.frc];
-    [[self.delegate expect] controller:self.frc sectionIndexTitleForSectionName:[OCMArg isNotEqual:@"1type"]];
-    [[self.delegate expect] controller:self.frc sectionIndexTitleForSectionName:[OCMArg isNotEqual:@"2type"]];
-    [[self.delegate expect] controller:self.frc sectionIndexTitleForSectionName:[OCMArg isNotEqual:@"1types"]];
-    [[self.delegate expect] controller:self.frc sectionIndexTitleForSectionName:[OCMArg isNotEqual:@"1type"]];
+    [[self.delegate expect] controller:self.frc sectionIndexTitleForSectionName:[OCMArg isEqual:@"1type"]];
+    [[self.delegate expect] controller:self.frc sectionIndexTitleForSectionName:[OCMArg isEqual:@"2type"]];
+    [[self.delegate expect] controller:self.frc sectionIndexTitleForSectionName:[OCMArg isEqual:@"1types"]];
+    [[self.delegate expect] controller:self.frc sectionIndexTitleForSectionName:[OCMArg isEqual:@"1type"]];
     [[self.delegate stub] controller:self.frc didChangeSection:[OCMArg any] atIndex:0 forChangeType:(NSFetchedResultsChangeInsert)];
     [[self.delegate stub] controller:self.frc didChangeSection:[OCMArg any] atIndex:1 forChangeType:(NSFetchedResultsChangeInsert)];
     [[self.delegate stub] controller:self.frc didChangeSection:[OCMArg any] atIndex:2 forChangeType:(NSFetchedResultsChangeInsert)];
