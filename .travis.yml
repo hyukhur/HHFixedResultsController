@@ -6,5 +6,8 @@ xcode_sdk: iphonesimulator
 before_install:
     - gem install cocoapods --no-rdoc --no-ri --no-document --quiet
     - gem install xcpretty --no-rdoc --no-ri --no-document --quiet
+    - brew update
+    - brew unlink xctool
+    - brew install xctool
 after_success:
       - ./coveralls.rb --extension m --exclude-folder Pods
