@@ -1,4 +1,7 @@
 language: objective-c
+xcode_workspace: HHFixedResultsController.xcworkspace
+xcode_scheme: HHFixedResultsController
+podfile: ./Podfile
 before_install:
     - gem install cocoapods --no-rdoc --no-ri --no-document --quiet
     - gem install xcpretty --no-rdoc --no-ri --no-document --quiet
