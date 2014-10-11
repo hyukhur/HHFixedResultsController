@@ -1,10 +1,10 @@
 language: objective-c
 xcode_workspace: HHFixedResultsController.xcworkspace
 xcode_scheme: HHFixedResultsController
-podfile: ./Podfile
+podfile: Podfile
+xcode_sdk: iphonesimulator
 before_install:
     - gem install cocoapods --no-rdoc --no-ri --no-document --quiet
     - gem install xcpretty --no-rdoc --no-ri --no-document --quiet
-    - pod install && cd $TRAVIS_BUILD_DIR
 after_success:
       - ./coveralls.rb --extension m --exclude-folder Pods
