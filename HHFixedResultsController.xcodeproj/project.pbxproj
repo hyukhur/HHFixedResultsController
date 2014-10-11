@@ -41,6 +41,7 @@
 
 /* Begin PBXFileReference section */
 		01D72183B672130E975C4897 /* Pods-HHFixedResultsControllerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HHFixedResultsControllerTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-HHFixedResultsControllerTests/Pods-HHFixedResultsControllerTests.release.xcconfig"; sourceTree = "<group>"; };
+		45DD6A12DC6BDEDC06DFF236 /* Pods-HHFixedResultsControllerTests.coverage.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HHFixedResultsControllerTests.coverage.xcconfig"; path = "Pods/Target Support Files/Pods-HHFixedResultsControllerTests/Pods-HHFixedResultsControllerTests.coverage.xcconfig"; sourceTree = "<group>"; };
 		4D3D547A18CE33CA00795CC3 /* HHFixedResultsController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HHFixedResultsController.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D3D547D18CE33CA00795CC3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4D3D547F18CE33CA00795CC3 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -101,6 +102,7 @@
 			children = (
 				CC02C61B4CC1C043A6D20532 /* Pods-HHFixedResultsControllerTests.debug.xcconfig */,
 				01D72183B672130E975C4897 /* Pods-HHFixedResultsControllerTests.release.xcconfig */,
+				45DD6A12DC6BDEDC06DFF236 /* Pods-HHFixedResultsControllerTests.coverage.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -591,7 +593,7 @@
 		};
 		4DDCFC8819E3727F00F4F90C /* Coverage */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CC02C61B4CC1C043A6D20532 /* Pods-HHFixedResultsControllerTests.debug.xcconfig */;
+			baseConfigurationReference = 45DD6A12DC6BDEDC06DFF236 /* Pods-HHFixedResultsControllerTests.coverage.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/HHFixedResultsController.app/HHFixedResultsController";
 				FRAMEWORK_SEARCH_PATHS = (
