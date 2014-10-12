@@ -11,19 +11,9 @@ before_install:
     - brew install xctool
     - sudo easy_install cpp-coveralls
     - sudo easy_install PyYAML
+script: 
+    - xctool -workspace HHFixedResultsController.xcworkspace -scheme HHFixedResultsController -sdk iphonesimulator build test ARCHS=i386 VALID_ARCHS=i386 ONLY_ACTIVE_ARCH=NO GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES
 after_success:
-      - ./coveralls.rb --extension m -e Pods -e HHFixedResultsControllerTests
-test-with-coverage:
-  xcodebuild \
-      -project $(PROJECT) \
-      -target $(TEST_TARGET) \
-      -sdk iphonesimulator \
-      -configuration Debug \
-      TEST_AFTER_BUILD=YES \
-      TEST_HOST= \
-      GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES \
-      GCC_GENERATE_TEST_COVERAGE_FILES=YES
-send-coverage:
-  coveralls \
-      -e HHFixedResultsControllerTests/*
-      
+    - ./coveralls.rb --extension m -e Pods -e HHFixedResultsControllerTests
+#test-with-coverage: xcodebuild -project $(PROJECT) -target $(TEST_TARGET) -sdk iphonesimulator -configuration Debug GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES
+#send-coverage: coveralls -e HHFixedResultsControllerTests/*
