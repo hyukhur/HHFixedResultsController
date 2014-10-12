@@ -11,7 +11,7 @@ before_install:
     - brew install xctool
     - sudo easy_install cpp-coveralls
 after_success:
-      - ./coveralls.rb --extension m --exclude-folder Pods --exclude-foler HHFixedResultsControllerTests
+      - ./coveralls.rb --extension m -e Pods -e HHFixedResultsControllerTests
 test-with-coverage:
   xcodebuild \
       -project $(PROJECT) \
