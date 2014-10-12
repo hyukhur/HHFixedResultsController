@@ -9,6 +9,7 @@ before_install:
     - brew update
     - brew unlink xctool
     - brew install xctool
+    - sudo easy_install cpp-coveralls
 after_success:
       - ./coveralls.rb --extension m --exclude-folder Pods
 test-with-coverage:
