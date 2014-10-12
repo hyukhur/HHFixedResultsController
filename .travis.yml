@@ -10,6 +10,7 @@ before_install:
     - brew unlink xctool
     - brew install xctool
     - sudo easy_install cpp-coveralls
+    - sudo easy_install PyYAML
 after_success:
       - ./coveralls.rb --extension m -e Pods -e HHFixedResultsControllerTests
 test-with-coverage:
