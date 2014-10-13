@@ -1,11 +1,11 @@
 language: objective-c
-xcode_workspace: HHFixedResultsController.xcworkspace
-xcode_scheme: HHFixedResultsController
-podfile: Podfile
-xcode_sdk: iphonesimulator
+#xcode_workspace: HHFixedResultsController.xcworkspace
+#xcode_scheme: HHFixedResultsController
+#podfile: Podfile
+#xcode_sdk: iphonesimulator
 before_install:
     - gem install cocoapods --no-rdoc --no-ri --no-document --quiet
-    - gem install xcpretty --no-rdoc --no-ri --no-document --quiet
+#    - gem install xcpretty --no-rdoc --no-ri --no-document --quiet
     - brew update
     - brew unlink xctool
     - brew install xctool
@@ -14,6 +14,6 @@ before_install:
 script: 
     - xctool -workspace HHFixedResultsController.xcworkspace -scheme HHFixedResultsController -sdk iphonesimulator build test ARCHS=i386 VALID_ARCHS=i386 ONLY_ACTIVE_ARCH=NO GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES
 after_success:
-    - ./coveralls.rb --extension m -e Pods -e HHFixedResultsControllerTests
+    - ./coveralls.rb -h -x m -e Pods -e HHFixedResultsControllerTests -e HHFixedResultsController/HHAppDelegate.m
 #test-with-coverage: xcodebuild -project $(PROJECT) -target $(TEST_TARGET) -sdk iphonesimulator -configuration Debug GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES
 #send-coverage: coveralls -e HHFixedResultsControllerTests/*
