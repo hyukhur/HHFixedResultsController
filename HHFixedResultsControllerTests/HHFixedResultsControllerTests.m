@@ -68,9 +68,79 @@
     XCTAssertEqual((NSUInteger)3, [[frc sections] count]);
     XCTAssertEqual((NSUInteger)1, [[[[frc sections] lastObject] objects] count]);
     XCTAssertNotNil([[[frc sections] lastObject] name]);
-
 }
 
+- (void)testFetchWithoutRequest
+{
+    HHFixedResultsController *frc = [[HHFixedResultsController alloc]
+                                     initWithFetchRequest:nil
+                                     objects:self.objects
+                                     sectionNameKeyPath:@"type"
+                                     cacheName:nil];
+
+    XCTAssertEqual((NSUInteger)0, [[frc fetchedObjects] count]);
+    XCTAssertEqual((NSUInteger)0, [[frc sections] count]);
+    XCTAssertEqual((NSUInteger)0, [[[[frc sections] lastObject] objects] count]);
+    XCTAssertNil([[[frc sections] lastObject] name]);
+    [frc performFetch:nil];
+
+    XCTAssertEqual((NSUInteger)5, [[frc fetchedObjects] count]);
+    XCTAssertEqual((NSUInteger)3, [[frc sections] count]);
+    XCTAssertEqual((NSUInteger)1, [[[[frc sections] lastObject] objects] count]);
+    XCTAssertNotNil([[[frc sections] lastObject] name]);
+}
+
+- (void)testFetchWitoutSectionName
+{
+    HHFixedResultsController *frc = [[HHFixedResultsController alloc]
+                                     initWithFetchRequest:self.frc.fetchRequest
+                                     objects:self.objects
+                                     sectionNameKeyPath:nil
+                                     cacheName:nil];
+
+    XCTAssertEqual((NSUInteger)0, [[frc fetchedObjects] count]);
+    XCTAssertEqual((NSUInteger)0, [[frc sections] count]);
+    XCTAssertEqual((NSUInteger)0, [[[[frc sections] lastObject] objects] count]);
+    XCTAssertNil([[[frc sections] lastObject] name]);
+    [frc performFetch:nil];
+
+    XCTAssertEqual((NSUInteger)4, [[frc fetchedObjects] count]);
+    XCTAssertEqual((NSUInteger)1, [[frc sections] count]);
+    XCTAssertEqual((NSUInteger)4, [[[[frc sections] lastObject] objects] count]);
+    XCTAssertEqual((NSUInteger)4, [[[frc sections] lastObject] numberOfObjects]);
+    XCTAssertNotNil([[frc sections] lastObject]);
+    XCTAssertNil([[[frc sections] lastObject] name]);
+}
+
+/*
+ @{@"type":@"atype", @"title":@"title one", @"detail":@"test value1", @"type2":@""},
+ @{@"type":@"btype", @"title":@"title two", @"detail":@"test value2", @"type2":@""},
+ @{@"type":@"atypes",@"title":@"title fouth", @"detail":@"test value4", @"type2":@""},
+ @{@"type":@"atype", @"title":@"title zero", @"detail":@"test value0", @"type2":@""},
+ @{@"type":@"atype", @"title":@"title", @"detail":@"test value0", @"type2":@""},
+
+ */
+- (void)testFetchWithOnlyObjects
+{
+    HHFixedResultsController *frc = [[HHFixedResultsController alloc]
+                                     initWithFetchRequest:nil
+                                     objects:self.objects
+                                     sectionNameKeyPath:nil
+                                     cacheName:nil];
+
+    XCTAssertEqual((NSUInteger)0, [[frc fetchedObjects] count]);
+    XCTAssertEqual((NSUInteger)0, [[frc sections] count]);
+    XCTAssertEqual((NSUInteger)0, [[[[frc sections] lastObject] objects] count]);
+    XCTAssertNil([[[frc sections] lastObject] name]);
+    [frc performFetch:nil];
+
+    XCTAssertEqual((NSUInteger)5, [[frc fetchedObjects] count]);
+    XCTAssertEqual((NSUInteger)1, [[frc sections] count]);
+    XCTAssertEqual((NSUInteger)5, [[[[frc sections] lastObject] objects] count]);
+    XCTAssertEqual((NSUInteger)5, [[[frc sections] lastObject] numberOfObjects]);
+    XCTAssertNotNil([[frc sections] lastObject]);
+    XCTAssertNil([[[frc sections] lastObject] name]);
+}
 
 - (void) testFetchAllObjects {
     NSArray *allObject = [self.frc fetchedObjects];

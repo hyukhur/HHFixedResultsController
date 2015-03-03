@@ -199,7 +199,13 @@ typedef BOOL(^HHObjectsChangingSpecBlock)(NSArray *oldFetchedObjects, NSArray *n
  */
 - (BOOL)performFetch:(NSError **)error
 {
-    NSArray *sFetchedObjects = [[self.objects filteredArrayUsingPredicate:self.fetchRequest.predicate] sortedArrayUsingDescriptors:self.fetchRequest.sortDescriptors];
+    NSArray *sFetchedObjects = self.objects;
+    if (self.fetchRequest.predicate) {
+        sFetchedObjects = [sFetchedObjects filteredArrayUsingPredicate:self.fetchRequest.predicate];
+    }
+    if (self.fetchRequest.sortDescriptors) {
+        sFetchedObjects = [sFetchedObjects sortedArrayUsingDescriptors:self.fetchRequest.sortDescriptors];
+    }
     BOOL hasChanged = self.previousDelegate != self.delegate;
     hasChanged |= [[self fetchObjectsChangedSpecs] indexOfObjectPassingTest:^BOOL(HHObjectsChangingSpecBlock specBlock, NSUInteger idx, BOOL *stop) {
         return specBlock(sFetchedObjects, self.fetchedObjects);
