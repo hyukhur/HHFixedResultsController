@@ -112,14 +112,6 @@
     XCTAssertNil([[[frc sections] lastObject] name]);
 }
 
-/*
- @{@"type":@"atype", @"title":@"title one", @"detail":@"test value1", @"type2":@""},
- @{@"type":@"btype", @"title":@"title two", @"detail":@"test value2", @"type2":@""},
- @{@"type":@"atypes",@"title":@"title fouth", @"detail":@"test value4", @"type2":@""},
- @{@"type":@"atype", @"title":@"title zero", @"detail":@"test value0", @"type2":@""},
- @{@"type":@"atype", @"title":@"title", @"detail":@"test value0", @"type2":@""},
-
- */
 - (void)testFetchWithOnlyObjects
 {
     HHFixedResultsController *frc = [[HHFixedResultsController alloc]
